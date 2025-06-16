@@ -1,0 +1,50 @@
+{% extends "Admin/common_base.html" %}
+
+
+
+{% block content%}
+
+
+<body>
+    
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">List of User</h2>
+
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in usr %}
+                <tr>
+                    <td>{{ i.id }}</td>
+                    <td>{{ i.name }}</td>
+                    <td>{{ i.email }}</td>
+                    <td>{{ i.status }}</td>
+                    <td>
+                        {% if i.status == 'approved' %}
+                            <a href="/reject?id={{ i.id }}" class="btn btn-danger btn-sm">Rejected</a>
+                        {% elif i.status == 'rejected' %}
+                            <a href="/accept?id={{ i.id }}" class="btn btn-primary btn-sm">Approved</a>
+                        {% elif i.status == 'pending' %}
+                            <a href="/accept?id={{ i.id }}" class="btn btn-primary btn-sm">Approved</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add your JS files -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock  %}

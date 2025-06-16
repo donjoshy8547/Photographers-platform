@@ -1,0 +1,577 @@
+{% extends "asphotograph/common_base.html" %}
+
+{% block content %}
+<style>
+    /* Main Styles */
+    .event-details-container {
+        padding: 3rem 0;
+        background-color: #f8f9fa;
+        min-height: 100vh;
+    }
+    
+    .event-header {
+        position: relative;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .event-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+        opacity: 0.2;
+        z-index: 0;
+    }
+    
+    .event-title {
+        position: relative;
+        z-index: 1;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        animation: fadeInDown 1s ease-out;
+    }
+    
+    .event-meta {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        animation: fadeInUp 1s ease-out;
+    }
+    
+    .event-meta-item {
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+    }
+    
+    .event-meta-item i {
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+    }
+    
+    .event-description {
+        position: relative;
+        z-index: 1;
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.6;
+        animation: fadeIn 1.2s ease-out;
+    }
+    
+    .event-status {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 2;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.8rem;
+        animation: pulseAnimation 2s infinite;
+    }
+    
+    .status-published {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .status-draft {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    
+    /* Card Styles */
+    .info-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        padding: 1.5rem;
+        height: 100%;
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    }
+    
+    .info-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #11998e, #38ef7d);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease-out;
+    }
+    
+    .info-card:hover::after {
+        transform: scaleX(1);
+    }
+    
+    .card-title {
+        color: #343a40;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-title i {
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+        color: #6a11cb;
+    }
+    
+    /* Photographer Cards */
+    .photographer-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .photographer-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+        border-left: 4px solid #6a11cb;
+    }
+    
+    .photographer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+    
+    .photographer-name {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #343a40;
+    }
+    
+    .photographer-role {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    
+    .role-main {
+        background-color: #e3f2fd;
+        color: #0d47a1;
+    }
+    
+    .role-assistant {
+        background-color: #e8f5e9;
+        color: #1b5e20;
+    }
+    
+    .photographer-info {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 0.25rem;
+    }
+    
+    /* Photo Gallery */
+    .photo-gallery {
+        margin-top: 1.5rem;
+    }
+    
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .gallery-item {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        aspect-ratio: 1;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    
+    .gallery-item:hover {
+        transform: scale(1.05);
+    }
+    
+    .gallery-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .gallery-item:hover .gallery-img {
+        transform: scale(1.1);
+    }
+    
+    .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        padding: 1rem;
+        color: white;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+    
+    .gallery-item:hover .gallery-overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Applications Section */
+    .applications-list {
+        margin-top: 1rem;
+    }
+    
+    .application-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border-left: 4px solid #ffc107;
+    }
+    
+    .application-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+    }
+    
+    .application-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    
+    .applicant-name {
+        font-weight: 600;
+        color: #343a40;
+    }
+    
+    .application-date {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .application-message {
+        font-size: 0.95rem;
+        color: #495057;
+        margin-bottom: 1rem;
+    }
+    
+    .application-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-approved {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        margin-top: 2rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+    
+    .btn-action {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-action i {
+        margin-right: 0.5rem;
+    }
+    
+    .btn-apply {
+        background: linear-gradient(45deg, #11998e, #38ef7d);
+        color: white;
+        border: none;
+    }
+    
+    .btn-apply:hover {
+        background: linear-gradient(45deg, #0d8b81, #32d56f);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        color: white;
+    }
+    
+    .btn-back {
+        background: linear-gradient(45deg, #2193b0, #6dd5ed);
+        color: white;
+        border: none;
+    }
+    
+    .btn-back:hover {
+        background: linear-gradient(45deg, #1c7a94, #5bc0d9);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        color: white;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes pulseAnimation {
+        0% {
+            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+        }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 1s ease-out;
+    }
+    
+    .animate-fade-in-delay-1 {
+        animation: fadeIn 1s ease-out 0.2s forwards;
+        opacity: 0;
+    }
+    
+    .animate-fade-in-delay-2 {
+        animation: fadeIn 1s ease-out 0.4s forwards;
+        opacity: 0;
+    }
+    
+    .animate-fade-in-delay-3 {
+        animation: fadeIn 1s ease-out 0.6s forwards;
+        opacity: 0;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .event-header {
+            padding: 2rem 0;
+        }
+        
+        .event-title {
+            font-size: 2rem;
+        }
+        
+        .event-meta {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .photographer-list, .gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="event-details-container">
+    <div class="container">
+        <!-- Event Header -->
+        <div class="event-header text-center">
+            <div class="event-status {% if event.status == 'published' %}status-published{% else %}status-draft{% endif %}">
+                {{ event.status|title }}
+            </div>
+            <h1 class="event-title">{{ event.Event }}</h1>
+            <div class="event-description">{{ event.Dis }}</div>
+            <div class="event-meta">
+                <div class="event-meta-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    {{ event.date|date:"F d, Y" }}
+                </div>
+                <div class="event-meta-item">
+                    <i class="fas fa-clock"></i>
+                    {{ event.time }}
+                </div>
+                <div class="event-meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ event.location }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Lead Photographer Only -->
+            <div class="col-lg-6 mb-4 animate-fade-in-delay-1">
+                <div class="info-card">
+                    <h3 class="card-title"><i class="fas fa-user-tie"></i> Lead Photographer</h3>
+                    {% if assigned_photographers %}
+                        {% for photographer in assigned_photographers %}
+                            {% if not photographer.is_assistant and forloop.counter == 1 %}
+                                <div class="photographer-card">
+                                    <h4 class="photographer-name">{{ photographer.name }}</h4>
+                                    <span class="photographer-role role-main">Lead Photographer</span>
+                                    <div class="photographer-info">
+                                        <i class="fas fa-camera"></i> {{ photographer.specialization }}
+                                    </div>
+                                    <div class="photographer-info">
+                                        <i class="fas fa-map-marker-alt"></i> {{ photographer.location }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No lead photographer has been assigned to this event yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Event Applications -->
+            <div class="col-lg-6 mb-4 animate-fade-in-delay-2">
+                <div class="info-card">
+                    <h3 class="card-title"><i class="fas fa-clipboard-list"></i> Applications</h3>
+                    {% if applications %}
+                        <div class="applications-list">
+                            {% for application in applications %}
+                                <div class="application-card">
+                                    <div class="application-header">
+                                        <div class="applicant-name">{{ application.photographer.name }}</div>
+                                        <div class="application-date">{{ application.created_at|date:"M d, Y" }}</div>
+                                    </div>
+                                    
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No applications have been received for this event yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            {% if event.status == 'published' %}
+                <a href="/apply_event?id={{ event.id }}" class="btn btn-action btn-apply">
+                    <i class="fas fa-handshake"></i> Apply as Assistant
+                </a>
+            {% endif %}
+            <a href="/view_published_events" class="btn btn-action btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Events
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize AOS animation library if available
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add scroll reveal animations
+        const animateElements = document.querySelectorAll('.info-card, .photographer-card, .application-card, .gallery-item');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+        
+        // Initialize FancyBox for gallery if available
+        if (typeof $.fancybox !== 'undefined') {
+            $('[data-fancybox="gallery"]').fancybox({
+                buttons: ['zoom', 'slideShow', 'fullScreen', 'download', 'close'],
+                animationEffect: "fade",
+                transitionEffect: "slide"
+            });
+        }
+    });
+</script>
+{% endblock %}

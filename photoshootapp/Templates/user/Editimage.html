@@ -1,0 +1,35 @@
+{% extends "user/common_base.html" %}
+
+{% block content %}
+<br>
+<br>
+<br>
+  <style>
+    canvas {
+      border: 1px solid #ccc;
+      display: block;
+      margin: 20px auto;
+    }
+    .controls {
+      text-align: center;
+    }
+    .controls button {
+      margin: 5px;
+    }
+  </style>
+
+  < <h1 style="text-align: center;">Photo Editor</h1>
+  <div class="controls">
+    <input type="file" id="upload" accept="image/*">
+    <button id="crop">Crop</button>
+    <button id="brightness-increase">Brightness +</button>
+    <button id="brightness-decrease">Brightness -</button>
+    <button id="contrast-increase">Contrast +</button>
+    <button id="contrast-decrease">Contrast -</button>
+    <button id="download">Download</button>
+  </div>
+  <canvas id="canvas"></canvas>
+
+
+  <script src="/static/js/script.js"></script>
+  {% endblock %}

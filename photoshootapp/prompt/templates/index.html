@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .search-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .search-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        .search-input {
+            flex-grow: 1;
+        }
+        .filter-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .filter-group {
+            flex: 1;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], select, input[type="number"] {
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .slider {
+            flex-grow: 1;
+        }
+        .slider-value {
+            width: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .result-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        .image-container {
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .info {
+            padding: 15px;
+        }
+        .score {
+            display: inline-block;
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .caption {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .metadata {
+            color: #666;
+            font-size: 14px;
+        }
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .active-filters {
+            background-color: #e8f5e9;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .filter-tag {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-right: 5px;
+            font-size: 14px;
+        }
+        .high-score {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .medium-score {
+            background-color: #FFC107;
+            color: black;
+        }
+        .low-score {
+            background-color: #F44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced Image Search with TF-IDF</h1>
+    
+    <form class="search-form" method="POST">
+        <div class="search-row">
+            <div class="search-input">
+                <input type="text" name="query" placeholder="Enter search query..." value="{{ query }}" required>
+            </div>
+            <div>
+                <input type="number" name="top_k" placeholder="Results" value="15" min="1" max="50">
+            </div>
+        </div>
+        
+        <div class="slider-container">
+            <label for="min_score">Minimum Similarity Score: <span id="score-value">{{ min_score }}</span></label>
+            <div class="slider-row">
+                <input type="range" id="min_score" name="min_score" class="slider" 
+                       min="0" max="1" step="0.05" value="{{ min_score }}" 
+                       oninput="document.getElementById('score-value').textContent = this.value">
+                <span class="slider-value">{{ min_score }}</span>
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-group">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender">
+                    <option value="">Any</option>
+                    {% for gender in genders %}
+                    <option value="{{ gender }}" {% if filters.Gender == gender %}selected{% endif %}>{{ gender }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="emotion">Emotion</label>
+                <select name="emotion" id="emotion">
+                    <option value="">Any</option>
+                    {% for emotion in emotions %}
+                    <option value="{{ emotion }}" {% if filters.Emotion == emotion %}selected{% endif %}>{{ emotion }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="race">Race</label>
+                <select name="race" id="race">
+                    <option value="">Any</option>
+                    {% for race in races %}
+                    <option value="{{ race }}" {% if filters.Race == race %}selected{% endif %}>{{ race }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <button type="submit">Search</button>
+    </form>
+    
+    {% if filters %}
+    <div class="active-filters">
+        <strong>Active filters:</strong>
+        {% if filters.Gender %}<span class="filter-tag">Gender: {{ filters.Gender }}</span>{% endif %}
+        {% if filters.Emotion %}<span class="filter-tag">Emotion: {{ filters.Emotion }}</span>{% endif %}
+        {% if filters.Race %}<span class="filter-tag">Race: {{ filters.Race }}</span>{% endif %}
+        <span class="filter-tag">Min Score: {{ min_score }}</span>
+    </div>
+    {% endif %}
+    
+    {% if results %}
+        <h2>Found {{ results|length }} results for "{{ query }}"</h2>
+        <div class="results">
+            {% for result in results %}
+                <div class="result-card">
+                    <div class="image-container">
+                        <img src="{{ result.image_url }}" alt="{{ result.caption }}">
+                    </div>
+                    <div class="info">
+                        {% if result.similarity_score >= 0.5 %}
+                            <div class="score high-score">Score: {{ "%.2f"|format(result.similarity_score) }}</div>
+                        {% elif result.similarity_score >= 0.25 %}
+                            <div class="score medium-score">Score: {{ "%.2f"|format(result.similarity_score) }}</div>
+                        {% else %}
+                            <div class="score low-score">Score: {{ "%.2f"|format(result.similarity_score) }}</div>
+                        {% endif %}
+                        <div class="caption">{{ result.caption }}</div>
+                        <div class="metadata">
+                            <p>Emotion: {{ result.emotion }}</p>
+                            <p>{{ result.age }} year old {{ result.gender }}, {{ result.race }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% elif query %}
+        <div class="no-results">
+            <h2>No results found for "{{ query }}"</h2>
+            <p>Try a different search term, lower the minimum score threshold, or check your spelling.</p>
+        </div>
+    {% endif %}
+
+    <script>
+        // Update the slider value display when the slider is moved
+        document.getElementById('min_score').oninput = function() {
+            document.getElementById('score-value').textContent = this.value;
+        };
+    </script>
+</body>
+</html>

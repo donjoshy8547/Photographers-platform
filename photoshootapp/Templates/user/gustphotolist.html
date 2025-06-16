@@ -1,0 +1,56 @@
+{% extends "user/gust_base.html" %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<div id="gallery" class="section lb">
+    <div class="container">
+        <div class="section-title text-center">
+            <h3>Gallery</h3>
+        </div><!-- end title -->
+    
+        <!-- Filter buttons for each category -->
+        <div class="gallery-menu text-center row">
+            <div class="col-md-12">
+                <div class="button-group filter-button-group">
+                    <button class="active" data-filter="*">All</button>
+                    {% regroup aha by category as grouped_images %}
+                    {% for group in grouped_images %}
+                        <!-- Use category name or slug for the filter class -->
+                        <button data-filter=".photo_{{ group.grouper|slugify }}"> {{ group.grouper }} </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Display gallery images based on the category -->
+        <div class="gallery-list row">
+            {% for group in grouped_images %}
+                {% for photo in group.list %}
+                <div class="col-md-4 col-sm-6 gallery-grid photo_{{ group.grouper|slugify }}">
+                    <div class="gallery-single fix">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="img-fluid" style="max-width: 300px; max-height: 200px;">
+                        <div class="box-content">
+                            <div class="inner-content">
+                                <!-- Display category name -->
+                                <h3 class="title">{{ group.grouper }}</h3>
+                                <span class="post">{{ photo.title }}</span>
+                            </div>
+                            <ul class="icon">
+                                <li><a href="{{ photo.image.url }}" data-rel="prettyPhoto[gal]"><i class="fa fa-search"></i></a></li>
+                                <li><a href="/download?id={{ photo.id }}"><i class="fas fa-download"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}
+            <form action="" method="post">
+                {% csrf_token %}
+                <!-- <input type="submit" name="mod" value="Mood"><input type="submit" name="face" value="Face"><input type="submit" name="spot" value="Spot"> -->
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

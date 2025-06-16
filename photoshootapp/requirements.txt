@@ -1,0 +1,27 @@
+# Django core
+Django
+pillow
+
+# AI/ML dependencies
+transformers
+deepface
+tensorflow
+torch
+torchvision
+dlib
+
+# Image processing
+numpy
+opencv-python
+face-recognition
+
+# Utilities
+requests
+pandas
+tqdm
+
+# For production deployment
+gunicorn
+whitenoise
+
+# vs build 2022

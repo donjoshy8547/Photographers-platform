@@ -1,0 +1,195 @@
+{% extends "user/common_base.html" %}
+
+{% block content %}
+	<div class="banner-area banner-bg-1">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="banner">
+						<h2>My Photos</h2>
+						<ul class="page-title-link">
+							<li><a href="/userhome">Home</a></li>
+							<li><a href="/gallarylist">Gallery</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+    <div id="gallery" class="section lb">
+		<div class="container">
+			<div class="section-title text-center">
+				<h3>Photographer Selected Images</h3>
+				<p>These images have been specially selected for you by your photographer</p>
+			</div><!-- end title -->
+		
+			<div class="row mb-4">
+				<div class="col-md-12 text-center">
+					<a href="/downloadusergalary/" class="btn btn-primary">
+						<i class="fas fa-download mr-2"></i> Download All as ZIP
+					</a>
+				</div>
+			</div>
+			
+			<div class="gallery-list row">
+				{% if aha %}
+					{% for image in aha %}
+						<div class="col-md-4 col-sm-6 gallery-grid">
+							<div class="gallery-single fix">
+								<img src="{{ image.image.url }}" class="img-fluid" alt="Photo">
+								<div class="box-content">
+									<div class="inner-content">
+										<h3 class="title">{{ image.description }}</h3>
+									</div>
+									<ul class="icon">
+										<li><a href="{{ image.image.url }}" data-rel="prettyPhoto[gal]"><i class="fa fa-search"></i></a></li>
+										<li><a href="{{ image.image.url }}" download><i class="fas fa-download"></i></a></li>
+									</ul>
+								</div>
+							</div>
+							<p class="image-description">{{ image.eventid.eventname }}</p>
+						</div>
+					{% endfor %}
+				{% else %}
+					<div class="col-12 text-center mt-5">
+						<h4>No photos available yet</h4>
+						<p>Your photographer hasn't shared any photos with you yet</p>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.gallery-grid {
+			margin-bottom: 30px;
+		}
+		
+		.gallery-single {
+			position: relative;
+			overflow: hidden;
+			border-radius: 5px;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+		
+		.gallery-single:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+		}
+		
+		.gallery-single img {
+			width: 100%;
+			height: 250px;
+			object-fit: cover;
+			transition: transform 0.5s ease;
+		}
+		
+		.gallery-single:hover img {
+			transform: scale(1.05);
+		}
+		
+		.box-content {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			padding: 15px;
+			background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+			transition: all 0.3s ease;
+		}
+		
+		.inner-content {
+			text-align: left;
+		}
+		
+		.inner-content .title {
+			color: #fff;
+			font-size: 18px;
+			margin-bottom: 0;
+			text-transform: capitalize;
+		}
+		
+		.box-content .icon {
+			position: absolute;
+			right: 15px;
+			bottom: 15px;
+			padding: 0;
+			margin: 0;
+			list-style: none;
+		}
+		
+		.box-content .icon li {
+			display: inline-block;
+			margin-left: 10px;
+		}
+		
+		.box-content .icon li a {
+			display: block;
+			width: 35px;
+			height: 35px;
+			line-height: 35px;
+			background: #fff;
+			border-radius: 50%;
+			text-align: center;
+			color: #333;
+			transition: all 0.3s ease;
+		}
+		
+		.box-content .icon li a:hover {
+			background: #1abc9c;
+			color: #fff;
+			transform: scale(1.1);
+		}
+		
+		.filter-button-group {
+			margin-bottom: 30px;
+		}
+		
+		.filter-button-group button {
+			background: #f8f9fa;
+			color: #333;
+			border: none;
+			padding: 8px 20px;
+			margin: 0 5px 10px;
+			border-radius: 30px;
+			font-weight: 500;
+			transition: all 0.3s ease;
+		}
+		
+		.filter-button-group button:hover,
+		.filter-button-group button.active {
+			background: #1abc9c;
+			color: #fff;
+		}
+		
+		.image-description {
+			margin-top: 10px;
+			font-size: 14px;
+			color: #666;
+			text-align: center;
+		}
+	</style>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Initialize isotope if the library is available
+			if (typeof Isotope !== 'undefined') {
+				var grid = document.querySelector('.gallery-list');
+				var iso = new Isotope(grid, {
+					itemSelector: '.gallery-grid',
+					layoutMode: 'fitRows'
+				});
+			}
+			
+			// Initialize prettyPhoto for image lightbox
+			if($.fn.prettyPhoto) {
+				$("a[data-rel^='prettyPhoto']").prettyPhoto({
+					social_tools: false,
+					theme: 'light_square'
+				});
+			}
+		});
+	</script>
+{% endblock %}

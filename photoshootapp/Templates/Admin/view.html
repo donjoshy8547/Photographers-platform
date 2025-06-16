@@ -1,0 +1,50 @@
+{% extends "Admin/common_base.html" %}
+
+
+
+{% block content%}
+
+
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">List of Photographers</h2>
+
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>specialization</th>
+                    {% comment %} <th>Image</th> {% endcomment %}
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in pho %}
+                <tr>
+                    <td>{{ i.id }}</td>
+                    <td>{{ i.name }}</td>
+                    <td>{{ i.email }}</td>
+                    <td>{{ i.phone }}</td>
+                    <td>{{ i.specialization }}</td>
+                    {% comment %} <td> <img src="./media/{{i.image}}" alt="/media/{{i.image}}" style="width: 50px; height: 50px;"></td> {% endcomment %}
+                    <td>
+                        <!-- Add edit/delete or any action buttons as needed -->
+                        <a href="/update?id={{i.id}}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="/delete?id={{i.id}}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add your JS files -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+</body>
+</html>
+{% endblock  %}

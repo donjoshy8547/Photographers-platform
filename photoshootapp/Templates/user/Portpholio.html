@@ -1,0 +1,538 @@
+{% extends "user/common_base.html" %}
+
+{% block content %}
+<!-- Innovative Portfolio Page with Modern Animations -->
+<style>
+    /* Base Variables */
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --accent-color: #4cc9f0;
+        --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        --text-color: #2b2d42;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --card-radius: 16px;
+        --transition-speed: 0.4s;
+    }
+
+    /* Page Layout */
+    .portfolio-page {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+        padding: 0;
+        overflow-x: hidden;
+        position: relative;
+    }
+    
+    /* Animated Background Elements */
+    .bg-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        opacity: 0.5;
+    }
+    
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: linear-gradient(45deg, rgba(67, 97, 238, 0.3), rgba(76, 201, 240, 0.3));
+        animation: float 15s infinite ease-in-out;
+    }
+    
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        top: -150px;
+        right: -100px;
+        animation-delay: 0s;
+    }
+    
+    .shape-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -100px;
+        left: -50px;
+        animation-delay: 5s;
+    }
+    
+    .shape-3 {
+        width: 150px;
+        height: 150px;
+        bottom: 30%;
+        right: 10%;
+        animation-delay: 7s;
+    }
+    
+    /* Hero Section */
+    .portfolio-hero {
+        position: relative;
+        padding: 120px 0 80px;
+        background: var(--gradient-primary);
+        color: white;
+        margin-bottom: 80px;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.2;
+    }
+    
+    .photographer-avatar {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        margin: 0 auto 30px;
+        display: block;
+        transform: translateY(50px);
+        opacity: 0;
+        animation: fadeInUp 1s ease-out forwards;
+    }
+    
+    .photographer-name {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
+        transform: translateY(30px);
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.2s forwards;
+    }
+    
+    .photographer-location {
+        font-size: 1.2rem;
+        text-align: center;
+        margin-bottom: 20px;
+        opacity: 0.9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateY(30px);
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.3s forwards;
+    }
+    
+    .photographer-location i {
+        margin-right: 8px;
+    }
+    
+    .photographer-contact {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+        transform: translateY(30px);
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.4s forwards;
+    }
+    
+    .contact-item {
+        display: flex;
+        align-items: center;
+        color: white;
+        opacity: 0.9;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-item:hover {
+        opacity: 1;
+        transform: translateY(-3px);
+    }
+    
+    .contact-item i {
+        margin-right: 8px;
+        font-size: 1.2rem;
+    }
+    
+    /* Main Content */
+    .portfolio-content {
+        position: relative;
+        z-index: 2;
+        padding: 0 20px;
+    }
+    
+    /* Info Card */
+    .info-card {
+        background: white;
+        border-radius: var(--card-radius);
+        box-shadow: 0 10px 30px var(--shadow-color);
+        padding: 40px;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+        transform: translateY(50px);
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.5s forwards;
+    }
+    
+    .info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: var(--gradient-primary);
+    }
+    
+    .info-card h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: var(--text-color);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .info-card h3::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--gradient-primary);
+        border-radius: 3px;
+    }
+    
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .form-control {
+        height: 55px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        background-color: white;
+    }
+    
+    .form-label {
+        position: absolute;
+        top: 17px;
+        left: 20px;
+        color: #6c757d;
+        transition: all 0.3s ease;
+        pointer-events: none;
+        background-color: transparent;
+        padding: 0 5px;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus + .form-label,
+    .form-control:not(:placeholder-shown) + .form-label {
+        top: -12px;
+        left: 15px;
+        font-size: 0.85rem;
+        color: var(--primary-color);
+        background-color: white;
+    }
+    
+    /* Button Styling */
+    .btn-request {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-request::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.6s ease;
+        z-index: -1;
+    }
+    
+    .btn-request:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+    }
+    
+    .btn-request:hover::before {
+        left: 100%;
+    }
+    
+    .btn-request i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+    }
+    
+    /* Specialization Tags */
+    .specialization-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 30px;
+    }
+    
+    .specialization-tag {
+        background: linear-gradient(45deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+        color: var(--primary-color);
+        padding: 8px 15px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .specialization-tag:hover {
+        background: var(--gradient-primary);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) scale(1);
+        }
+        50% {
+            transform: translateY(-20px) scale(1.05);
+        }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+        .portfolio-hero {
+            padding: 100px 0 60px;
+        }
+        
+        .photographer-avatar {
+            width: 150px;
+            height: 150px;
+        }
+        
+        .photographer-name {
+            font-size: 2.3rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .portfolio-hero {
+            padding: 80px 0 50px;
+        }
+        
+        .photographer-avatar {
+            width: 120px;
+            height: 120px;
+        }
+        
+        .photographer-name {
+            font-size: 2rem;
+        }
+        
+        .info-card {
+            padding: 30px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .portfolio-hero {
+            padding: 60px 0 40px;
+        }
+        
+        .photographer-contact {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+    }
+</style>
+
+<!-- Portfolio Page -->
+<div class="portfolio-page">
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="portfolio-hero">
+        <div class="hero-pattern"></div>
+        <div class="container">
+            <div class="hero-content">
+                <!-- Photographer Avatar -->
+                <img src="/media/{{ data.pimage }}" class="photographer-avatar" alt="{{ data.name }}">
+                
+                <!-- Photographer Info -->
+                <h1 class="photographer-name">{{ data.name }}</h1>
+                <div class="photographer-location">
+                    <i class="fas fa-map-marker-alt"></i> {{ data.location }}
+                </div>
+                
+                <!-- Contact Info -->
+                <div class="photographer-contact">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i> {{ data.email }}
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i> {{ data.phone }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Main Content -->
+    <div class="container portfolio-content">
+        <div class="row">
+            <!-- Photographer Details -->
+            <div class="col-lg-8 mx-auto">
+                <div class="info-card">
+                    <h3>About the Photographer</h3>
+                    
+                    <p>{{ data.name }} is a professional photographer based in {{ data.location }}. With expertise in {{ data.specialization }}, they provide exceptional photography services for various events and occasions.</p>
+                    
+                    
+                    <!-- Request Form -->
+                    <form action="/userrequest/?id={{data.id}}" method="POST" class="mt-5">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="name" name="name" value="{{data.name}}" placeholder=" " readonly>
+                                    <label for="name" class="form-label">Photographer Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="email" name="email" value="{{data.email}}" placeholder=" " readonly>
+                                    <label for="email" class="form-label">Email</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="tel" class="form-control" id="phone" name="phone" value="{{data.phone}}" placeholder=" " readonly>
+                                    <label for="phone" class="form-label">Phone</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="location" name="city" value="{{data.location}}" placeholder=" " readonly>
+                                    <label for="location" class="form-label">Location</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="address" name="address" value="{{data.address}}" placeholder=" " readonly>
+                                    <label for="address" class="form-label">Address</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <textarea class="form-control" id="req" name="req" rows="4" placeholder=" " style="height: auto; min-height: 120px;" required></textarea>
+                                    <label for="req" class="form-label">Your Request</label>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn-request">
+                                    <i class="fas fa-paper-plane"></i> Send Request
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate elements when they enter the viewport
+        const animateElements = document.querySelectorAll('.info-card, .specialization-tag');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        
+        animateElements.forEach(element => {
+            observer.observe(element);
+        });
+        
+        // Floating animation for background shapes
+        const shapes = document.querySelectorAll('.shape');
+        
+        window.addEventListener('mousemove', function(e) {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            shapes.forEach(shape => {
+                const shapeX = (x - 0.5) * 20;
+                const shapeY = (y - 0.5) * 20;
+                shape.style.transform = `translate(${shapeX}px, ${shapeY}px)`;
+            });
+        });
+    });
+</script>
+{% endblock %}

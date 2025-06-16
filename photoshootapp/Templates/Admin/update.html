@@ -1,0 +1,52 @@
+{% extends "Admin/common_base.html" %}
+
+
+{% block content %}
+    <div id="contact" class="section lb">
+        <div class="container" style="margin-top: -34px;">
+             <div class="section-title text-center">
+                <h3> ADD PHOTOGRAPHER</h3>
+                {% comment %} <p>Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus.</p>  {% endcomment %}
+            </div><!-- end title -->
+
+            <div class="row">
+                <div class="col-md-8" style=" margin-left: 240px;">
+                    <div class="contact_form" style="padding: 90px 120px;margin-left: 60px;">
+                        <div id="message"></div>
+						<form  method="post" enctype="multipart/form-data" action="">
+							{% csrf_token %}
+								<div class="col-md-6" style="right: 38px;">
+									<div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" name="name" id="name" type="name" value="{{ photo.name }}" placeholder="Your name">
+										<p class="help-block text-danger"></p>
+									</div>
+									{% comment %} <div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" name="email" id="email" type="email" value="{{ photo.email }}" placeholder="Your Email" >
+									</div> {% endcomment %}
+									{% comment %} <div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" name="password" id="password" type="password" value="{{ photo.password }}" placeholder="Password">
+										<p class="help-block text-danger"></p>
+									</div> {% endcomment %}
+									<div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" name="phone" id="phone" type="text" value="{{ photo.phone }}" placeholder="Phone number">
+										<p class="help-block text-danger"></p>
+									</div>
+									<div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" name="specialization" id="specialization" type="text"  value="{{ photo.specialization }}" placeholder="Your specialization">
+										<p class="help-block text-danger"></p>
+									</div>
+								</div>
+								{% comment %} <div class="clearfix"></div> {% endcomment %}
+								<div class="col-lg-12 text-left">
+									<div id="success"></div>
+									<button class="hover-effect-new" type="submit"><span>UPDATE</span></button>
+								</div>
+							</div>
+						</form>
+                    </div>
+                </div><!-- end col -->
+            </div><!-- end row -->
+        </div><!-- end container -->
+    </div><!-- end section -->
+	
+{% endblock %}

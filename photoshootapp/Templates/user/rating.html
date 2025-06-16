@@ -1,0 +1,114 @@
+{% extends "user/common_base.html" %}
+{% block content %}
+<br>
+<br>
+<!-- Form to submit a new review -->
+{% comment %} <h3>Submit Your Review:</h3> {% endcomment %}
+<form method="post" style="margin-left: 200px;">
+    {% csrf_token %}
+    
+    <!-- Rating Stars -->
+    <label for="rating">Rating (1-5):</label><br>
+    <div class="rating">
+        <input type="radio" id="star5" name="rating" value="5" required>
+        <label for="star5" class="star">&#9733;</label>
+        
+        <input type="radio" id="star4" name="rating" value="4" required>
+        <label for="star4" class="star">&#9733;</label>
+        
+        <input type="radio" id="star3" name="rating" value="3" required>
+        <label for="star3" class="star">&#9733;</label>
+        
+        <input type="radio" id="star2" name="rating" value="2" required>
+        <label for="star2" class="star">&#9733;</label>
+        
+        <input type="radio" id="star1" name="rating" value="1" required>
+        <label for="star1" class="star">&#9733;</label>
+    </div><br>
+
+    <!-- Review Text -->
+    <label for="review_text">Review:</label><br>
+    <textarea id="review_text" name="review_text" rows="4" placeholder="Write your review here..." required></textarea><br>
+
+    <button type="submit">Submit Review</button>
+</form>
+
+<!-- Add some enhanced CSS for the star rating -->
+<style>
+    .rating {
+        display: flex;
+        direction: row-reverse;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+        gap: 5px;
+    }
+    
+    .star {
+        font-size: 40px; /* Bigger stars */
+        color: #ddd; /* Gray color for inactive stars */
+        cursor: pointer;
+        transition: color 0.3s ease; /* Smooth color transition */
+        transition: transform 0.3s ease; /* Smooth scaling effect */
+    }
+    
+    .rating input[type="radio"] {
+        display: none;
+    }
+    
+    /* When a radio button is selected, change the star color to gold */
+    .rating input[type="radio"]:checked ~ .star {
+        color: #f39c12; /* Gold for selected stars */
+        transform: scale(1.3); /* Slightly enlarge the selected star */
+    }
+    
+    /* Hover effect on stars */
+    .star:hover,
+    .star:hover ~ .star {
+        color: #f39c12; /* Gold on hover */
+        transform: scale(1.3); /* Slightly enlarge stars when hovered */
+    }
+
+    .star:active {
+        color: #e67e22; /* Darker gold for active click effect */
+    }
+    
+    /* Styling for the review text area */
+    textarea {
+        width: 30%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        resize: vertical;
+    }
+
+    button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #2980b9;
+    }
+
+    /* Optional: Add responsiveness for mobile screens */
+    @media (max-width: 600px) {
+        .rating {
+            font-size: 30px;
+        }
+        textarea {
+            font-size: 14px;
+        }
+    }
+</style>
+<br>
+<br>
+{% endblock  %}

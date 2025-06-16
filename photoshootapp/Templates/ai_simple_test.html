@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Simple AI Test{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Simple AI Processing Test</h3>
+                </div>
+                <div class="card-body">
+                    <form id="simpleForm">
+                        <div class="form-group mb-3">
+                            <label for="photographerId">Photographer ID</label>
+                            <input type="text" class="form-control" id="photographerId" name="photographer_id" value="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Process Images</button>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <h4>Results</h4>
+                        <div class="card">
+                            <div class="card-body">
+                                <pre id="resultsArea" class="bg-light p-3">No results yet</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('simpleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = new FormData(this);
+            document.getElementById('resultsArea').textContent = 'Sending request...';
+            
+            fetch('/process-ai/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server returned ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('resultsArea').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('resultsArea').textContent = 'Error: ' + error;
+            });
+        });
+    });
+</script>
+{% endblock %}

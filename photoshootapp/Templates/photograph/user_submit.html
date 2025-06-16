@@ -1,0 +1,51 @@
+{% extends "photograph/common_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-4"><i class="fas fa-calendar-alt text-primary mr-2"></i> Your Events</h2>
+            <p class="text-center text-muted">Select an event to view and manage exported images</p>
+        </div>
+    </div>
+
+    {% if events %}
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm hover-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ event.Event }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text"><strong>Description:</strong> {{ event.Dis }}</p>
+                    <p class="card-text"><strong>Date:</strong> {{ event.date }}</p>
+                </div>
+                <div class="card-footer bg-light">
+                    <a href="{% url 'user_submit_event' event_id=event.id %}" class="btn btn-primary btn-block">
+                        <i class="fas fa-images mr-2"></i> View Images
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle mr-2"></i> You don't have any events registered yet.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>
+{% endblock %}

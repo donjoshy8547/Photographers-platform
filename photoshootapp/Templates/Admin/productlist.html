@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <!-- Basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">   
+   
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ 
+     <!-- Site Metas -->
+    <title>PhotoShoot - Product Management</title>  
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Site Icons -->
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+	<script src="/static/js/modernizr.js"></script> <!-- Modernizr -->
+
+    <style>
+        /* Custom Admin Dashboard Styles - Playful & Colorful */
+        :root {
+            --primary-color: #6200EA;
+            --secondary-color: #03DAC6;
+            --accent-color: #FF4081;
+            --light-color: #ecf0f1;
+            --dark-color: #37474F;
+            --sidebar-color: #4A148C;
+            --tertiary-color: #FFAB00;
+            --quaternary-color: #00BFA5;
+            --quinary-color: #FF6E40;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Playful Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: linear-gradient(to bottom, var(--sidebar-color), #311B92);
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+        
+        .sidebar-logo {
+            padding: 0 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .dashboard-logo {
+            height: 60px;
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+        }
+        
+        .dashboard-logo:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .dashboard-title {
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-top: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 1.4rem;
+        }
+        
+        .nav-menu {
+            padding: 0;
+            list-style: none;
+            margin-top: 30px;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: var(--accent-color);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: all 0.5s ease;
+        }
+        
+        .nav-link:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .nav-link i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-link:hover i,
+        .nav-link.active i {
+            transform: scale(1.2);
+            color: var(--tertiary-color);
+        }
+        
+        .admin-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        /* Playful Welcome Section */
+        .welcome-card {
+            background: linear-gradient(120deg, var(--primary-color), var(--sidebar-color));
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(var(--accent-color), transparent 70%);
+            top: -100px;
+            right: -50px;
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+        
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(var(--tertiary-color), transparent 70%);
+            bottom: -60px;
+            left: -30px;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+        
+        .welcome-card h2 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Animations */
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .fade-in-left {
+            animation: fadeInLeft 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Product management specific styles */
+        .photographers-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .photographers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .photographers-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .photographer-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .photographer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .photographer-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        .photographer-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .photographer-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        .photographer-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+        .photographer-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .photographer-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 20px;
+            border: 3px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .photographer-card:hover .photographer-img {
+            border-color: var(--accent-color);
+        }
+
+        .photographer-info {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .photographer-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .photographer-specialty {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .photographer-details {
+            display: flex;
+            flex-wrap: wrap;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+
+        .photographer-details div {
+            margin-right: 20px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .photographer-details i {
+            margin-right: 5px;
+            color: var(--tertiary-color);
+        }
+
+        .photographer-actions {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .ban-btn {
+            background-color: var(--quinary-color);
+            color: white;
+        }
+
+        .ban-btn:hover {
+            background-color: #E64A19;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #D81B60;
+            transform: translateY(-2px);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .status-active {
+            background-color: var(--quaternary-color);
+        }
+
+        .status-banned {
+            background-color: var(--quinary-color);
+        }
+
+        .status-pending {
+            background-color: var(--tertiary-color);
+        }
+
+        .banned {
+            position: relative;
+            opacity: 0.7;
+        }
+
+        .banned::before {
+            content: 'BANNED';
+            position: absolute;
+            top: 25px;
+            right: -30px;
+            background-color: var(--quinary-color);
+            color: white;
+            padding: 5px 40px;
+            font-weight: bold;
+            transform: rotate(45deg);
+            z-index: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: var(--dark-color);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+    </style>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="/static/images/logo.png" alt="PhotoShoot Admin" class="dashboard-logo">
+            <div class="dashboard-title">Admin Panel</div>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="/adminhome/" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item active">
+                <a href="/productlist/" class="nav-link active">
+                    <i class="fas fa-camera"></i>
+                    ProtoGraphers
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/viewfeedback/" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    Feedback
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+        
+        <div class="admin-footer">
+            &copy; Admin Panel
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="welcome-card fade-in-up">
+            <h2>Product Management</h2>
+            <p>View or remove any photographer from the platform.</p>
+        </div>
+        
+        <div class="photographers-container fade-in-up delay-1">
+            <div class="photographers-header">
+                <h2 class="photographers-title">All Photographers</h2>
+            </div>
+
+            {% if pro %}
+                {% for product in pro %}
+                <div class="photographer-card {% if product.status == 'banned' %}banned{% endif %}">
+                    {% if product.pimage %}
+                    <img src="/media/{{ product.pimage }}" class="photographer-img" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="https://via.placeholder.com/150" class="photographer-img" alt="No Image">
+                    {% endif %}
+                    
+                    <div class="photographer-info">
+                        <h3 class="photographer-name">{{ product.name }}</h3>
+                        <div class="photographer-details">
+                            <div>
+                                <i class="fas fa-map-marker-alt"></i> ${{ product.price }}
+                            </div>
+                            <div>
+                                <i class="fas fa-phone"></i> {{ product.id }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="photographer-actions">
+                        <a href="/delete_dataadmin/?id={{ product.id }}" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this product?')">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-camera"></i>
+                    <h3>No photographers found</h3>
+                    <p>There are no photographers matching your search criteria.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- JavaScript Libraries -->
+    <script src="/static/js/all.js"></script>
+    <script src="/static/js/jquery.mobile.customized.min.js"></script>
+    <script src="/static/js/jquery.easing.1.3.js"></script> 
+    <script src="/static/js/parallaxie.js"></script>
+    <script src="/static/js/jquery.appear.min.js"></script>
+    <script src="/static/js/custom.js"></script>
+</body>
+</html>

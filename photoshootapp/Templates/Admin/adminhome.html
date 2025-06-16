@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <!-- Basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">   
+   
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ 
+     <!-- Site Metas -->
+    <title>PhotoShoot - Admin Dashboard</title>  
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Site Icons -->
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+	<script src="/static/js/modernizr.js"></script> <!-- Modernizr -->
+
+    <style>
+        /* Custom Admin Dashboard Styles - Playful & Colorful */
+        :root {
+            --primary-color: #6200EA;
+            --secondary-color: #03DAC6;
+            --accent-color: #FF4081;
+            --light-color: #ecf0f1;
+            --dark-color: #37474F;
+            --sidebar-color: #4A148C;
+            --tertiary-color: #FFAB00;
+            --quaternary-color: #00BFA5;
+            --quinary-color: #FF6E40;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Playful Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: linear-gradient(to bottom, var(--sidebar-color), #311B92);
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding-top: 20px;
+            overflow-y: auto;
+        }
+        
+        .sidebar-logo {
+            padding: 0 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .dashboard-logo {
+            height: 60px;
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+        }
+        
+        .dashboard-logo:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+        
+        .dashboard-title {
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-top: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 1.4rem;
+        }
+        
+        .nav-menu {
+            padding: 0;
+            list-style: none;
+            margin-top: 30px;
+        }
+        
+        .nav-item {
+            margin-bottom: 5px;
+            position: relative;
+        }
+        
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: var(--accent-color);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item:hover::before,
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: all 0.5s ease;
+        }
+        
+        .nav-link:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .nav-link i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: white !important;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-link:hover i,
+        .nav-link.active i {
+            transform: scale(1.2);
+            color: var(--tertiary-color);
+        }
+        
+        .admin-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        /* Playful Welcome Section */
+        .welcome-card {
+            background: linear-gradient(120deg, var(--primary-color), var(--sidebar-color));
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(var(--accent-color), transparent 70%);
+            top: -100px;
+            right: -50px;
+            border-radius: 50%;
+            opacity: 0.4;
+        }
+        
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(var(--tertiary-color), transparent 70%);
+            bottom: -60px;
+            left: -30px;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+        
+        .welcome-card h2 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Playful Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stats-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            top: 0;
+            left: 0;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .stats-card:nth-child(2)::before {
+            background: linear-gradient(90deg, var(--accent-color), var(--tertiary-color));
+        }
+        
+        .stats-card:nth-child(3)::before {
+            background: linear-gradient(90deg, var(--tertiary-color), var(--quaternary-color));
+        }
+        
+        .stats-card:nth-child(4)::before {
+            background: linear-gradient(90deg, var(--quaternary-color), var(--quinary-color));
+        }
+        
+        .stats-card:nth-child(5)::before {
+            background: linear-gradient(90deg, var(--quinary-color), var(--primary-color));
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:nth-child(1) .stats-icon {
+            background-color: rgba(98, 0, 234, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .stats-card:nth-child(2) .stats-icon {
+            background-color: rgba(255, 64, 129, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .stats-card:nth-child(3) .stats-icon {
+            background-color: rgba(255, 171, 0, 0.1);
+            color: var(--tertiary-color);
+        }
+        
+        .stats-card:nth-child(4) .stats-icon {
+            background-color: rgba(0, 191, 165, 0.1);
+            color: var(--quaternary-color);
+        }
+        
+        .stats-card:nth-child(5) .stats-icon {
+            background-color: rgba(255, 110, 64, 0.1);
+            color: var(--quinary-color);
+        }
+        
+        .stats-card:hover .stats-icon {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        .stats-icon i {
+            font-size: 36px;
+        }
+        
+        .stats-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+        
+        .stats-count {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .stats-card:nth-child(2) .stats-count {
+            background: linear-gradient(90deg, var(--accent-color), var(--tertiary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stats-card:nth-child(3) .stats-count {
+            background: linear-gradient(90deg, var(--tertiary-color), var(--quaternary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stats-card:nth-child(4) .stats-count {
+            background: linear-gradient(90deg, var(--quaternary-color), var(--quinary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stats-card:nth-child(5) .stats-count {
+            background: linear-gradient(90deg, var(--quinary-color), var(--primary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Activity Section */
+        .activity-section {
+            background-color: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .activity-section::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(var(--secondary-color), transparent 70%);
+            opacity: 0.2;
+            border-radius: 50%;
+        }
+        
+        .activity-section h3 {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .activity-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .activity-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .activity-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .activity-item:nth-child(1) .activity-icon {
+            background-color: rgba(98, 0, 234, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .activity-item:nth-child(2) .activity-icon {
+            background-color: rgba(255, 64, 129, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .activity-item:nth-child(3) .activity-icon {
+            background-color: rgba(255, 171, 0, 0.1);
+            color: var(--tertiary-color);
+        }
+        
+        .activity-item:nth-child(4) .activity-icon {
+            background-color: rgba(0, 191, 165, 0.1);
+            color: var(--quaternary-color);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #95a5a6;
+        }
+        
+        /* Animation classes */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.5s ease-out forwards;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        
+        .bounce-animation {
+            animation: bounce 2s ease infinite;
+        }
+        
+        /* Animation delays */
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+        
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+        
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+        
+        .delay-4 {
+            animation-delay: 0.4s;
+        }
+        
+        .delay-5 {
+            animation-delay: 0.5s;
+        }
+    </style>
+
+</head>
+{% for m in messages %}
+<script>
+    alert("{{m}}")
+</script>
+{% endfor %}
+<body>
+    <!-- LOADER -->
+    <div id="preloader">
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+    </div><!-- end loader -->
+    <!-- END LOADER -->
+	
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="/static/images/logo.png" alt="PhotoShoot" class="dashboard-logo float-animation">
+            <h4 class="dashboard-title">Admin Panel</h4>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item active">
+                <a href="/adminhome" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/productlist/" class="nav-link">
+                    <i class="fas fa-box"></i>
+                    <span>Photographers</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/viewfeedback/" class="nav-link">
+                    <i class="fas fa-comments"></i>
+                    <span>Feedback</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+        
+        <div class="admin-footer">
+            Admin Panel &copy; 2025
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Welcome Section -->
+        <div class="welcome-card slide-in-left">
+            <h2>Welcome to Admin Dashboard!</h2>
+            <p class="mb-0">Manage your photography services, products, and user interactions.!</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stats-card fade-in-up delay-1">
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="stats-title">Regular Users</h3>
+                <div class="stats-count">{{ user_count }}</div>
+                <p class="stats-desc">Registered Users</p>
+            </div>
+            
+            <div class="stats-card fade-in-up delay-2">
+                <div class="stats-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3 class="stats-title">Photographers</h3>
+                <div class="stats-count">{{ photographer_count }}</div>
+                <p class="stats-desc">Professional Photographers</p>
+            </div>
+            
+            <div class="stats-card fade-in-up delay-4">
+                <div class="stats-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <h3 class="stats-title">Products</h3>
+                <div class="stats-count">{{ product_count }}</div>
+                <p class="stats-desc">Photography Products</p>
+            </div>
+            
+            <div class="stats-card fade-in-up delay-5">
+                <div class="stats-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3 class="stats-title">Events</h3>
+                <div class="stats-count">{{ event_count }}</div>
+                <p class="stats-desc">Upcoming Events</p>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" id="scroll-to-top" class="dmtop global-radius bounce-animation"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a>
+
+    <!-- ALL JS FILES -->
+    <script src="/static/js/all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+	<script src="/static/js/jquery.mobile.customized.min.js"></script>
+	<script src="/static/js/jquery.easing.1.3.js"></script> 
+	<script src="/static/js/parallaxie.js"></script>
+	<script src="/static/js/jquery.appear.min.js"></script>
+    <script src="/static/js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Animation for stats cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const statsCards = document.querySelectorAll('.stats-count');
+            
+            statsCards.forEach(card => {
+                const targetValue = parseFloat(card.textContent);
+                let currentValue = 0;
+                const duration = 2000; // 2 seconds
+                const interval = 20; // Update every 20ms
+                const steps = duration / interval;
+                const increment = targetValue / steps;
+                
+                card.textContent = '0';
+                
+                const counter = setInterval(() => {
+                    currentValue += increment;
+                    
+                    if (currentValue >= targetValue) {
+                        clearInterval(counter);
+                        card.textContent = Math.round(targetValue).toString();
+                    } else {
+                        card.textContent = Math.round(currentValue).toString();
+                    }
+                }, interval);
+            });
+            
+            // Traffic chart
+            const ctx = document.getElementById('trafficChart').getContext('2d');
+            const trafficChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Direct', 'Social Media', 'Search Engines', 'Email', 'Referral'],
+                    datasets: [{
+                        label: 'Traffic Sources',
+                        data: [35, 25, 20, 10, 10],
+                        backgroundColor: [
+                            '#6200EA', // Primary
+                            '#FF4081', // Accent
+                            '#FFAB00', // Tertiary
+                            '#00BFA5', // Quaternary
+                            '#FF6E40'  // Quinary
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    },
+                    cutout: '65%',
+                    borderRadius: 5
+                }
+            });
+            
+            // Add hover animations to nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('active')) {
+                        this.classList.add('hover-effect');
+                    }
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.classList.remove('hover-effect');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

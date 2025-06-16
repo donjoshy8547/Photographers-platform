@@ -1,0 +1,157 @@
+{% extends "user/common_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="banner-area banner-bg-1">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="banner">
+                    <h2>My Photographers</h2>
+                    <ul class="page-title-link">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/my-photographers">My Photographers</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="photographers" class="section wb">
+    <div class="container">
+        <div class="section-title text-center">
+            <h3>Photographers Assigned to My Events</h3>
+            <p>View all photographers assigned to your events, including main photographers and assistants</p>
+        </div><!-- end title -->
+
+        {% if events_with_photographers %}
+            {% for event_data in events_with_photographers %}
+                <div class="event-card mb-5">
+                    <div class="event-header bg-primary text-white p-3">
+                        <h4><i class="fas fa-calendar-event mr-2"></i> {{ event_data.event.name }}</h4>
+                        <p class="mb-0">
+                            <i class="fas fa-map-marker-alt mr-1"></i> {{ event_data.event.location }} | 
+                            <i class="fas fa-clock mr-1"></i> {{ event_data.event.time }} | 
+                            <i class="fas fa-calendar mr-1"></i> {{ event_data.event.date|date:"F d, Y" }}
+                        </p>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <!-- Main Photographer -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0"><i class="fas fa-camera mr-2"></i> Main Photographer</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            {% if event_data.main_photographer.image %}
+                                                <img src="{{ event_data.main_photographer.image }}" alt="{{ event_data.main_photographer.name }}" class="img-fluid rounded-circle mb-3">
+                                            {% else %}
+                                                <img src="{% static 'images/default-profile.jpg' %}" alt="{{ event_data.main_photographer.name }}" class="img-fluid rounded-circle mb-3">
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h5>{{ event_data.main_photographer.name }}</h5>
+                                            <p><strong>Specialization:</strong> {{ event_data.main_photographer.specialization }}</p>
+                                            <p><strong>Email:</strong> {{ event_data.main_photographer.email }}</p>
+                                            <p><strong>Phone:</strong> {{ event_data.main_photographer.phone }}</p>
+                                            <a href="/portpholio/?id={{ event_data.main_photographer.id }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-images mr-1"></i> View Portfolio
+                                            </a>
+                                            <a href="/download-exported-images/?photographer_id={{ event_data.main_photographer.id }}" class="btn btn-success btn-sm ml-2">
+                                                <i class="fas fa-download mr-1"></i> Download Exported Images
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Assistant Photographers -->
+                        <div class="col-lg-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0"><i class="fas fa-user-friends mr-2"></i> Assistant Photographers</h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if event_data.assistant_photographers %}
+                                        {% for assistant in event_data.assistant_photographers %}
+                                            <div class="row mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                                                <div class="col-md-3">
+                                                    {% if assistant.image %}
+                                                        <img src="{{ assistant.image }}" alt="{{ assistant.name }}" class="img-fluid rounded-circle mb-2">
+                                                    {% else %}
+                                                        <img src="{% static 'images/default-profile.jpg' %}" alt="{{ assistant.name }}" class="img-fluid rounded-circle mb-2">
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <h6>{{ assistant.name }}</h6>
+                                                    <p class="small mb-1"><strong>Specialization:</strong> {{ assistant.specialization }}</p>
+                                                    <p class="small mb-1"><strong>Email:</strong> {{ assistant.email }}</p>
+                                                    <p class="small mb-1"><strong>Phone:</strong> {{ assistant.phone }}</p>
+                                                    <a href="/portpholio/?id={{ assistant.id }}" class="btn btn-info btn-sm">
+                                                        <i class="fas fa-images mr-1"></i> View Portfolio
+                                                    </a>
+                                                    <a href="/download-exported-images/?photographer_id={{ assistant.id }}" class="btn btn-success btn-sm ml-2">
+                                                        <i class="fas fa-download mr-1"></i> Download Exported Images
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="text-center my-3">No assistant photographers assigned to this event</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle mr-2"></i> You don't have any events with assigned photographers yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .event-card {
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        overflow: hidden;
+        background-color: #fff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    .event-header {
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .rounded-circle {
+        width: 100%;
+        max-width: 120px;
+        height: auto;
+        object-fit: cover;
+        border: 3px solid #f8f9fa;
+    }
+</style>
+{% endblock %}

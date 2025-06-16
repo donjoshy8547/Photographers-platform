@@ -1,0 +1,128 @@
+{% extends "photograph/common_base.html" %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <!-- <a href="/userhome"><i class="fa fa-home"></i> Home</a>
+                    <span>Reply</span> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Order Section Begin -->
+<section class="order-section spad">
+    <div class="container">
+        <div class="row">
+            <!-- Order Details Form -->
+            <div class="col-lg-7 mb-4">
+                <div class="order-details-form p-4 rounded shadow-sm">
+                    <h4 class="mb-4">Assign Assistant for: {{ event.Event }}</h4>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-12 mb-3">
+                               <label for="ass" class="form-label">Select Assistant Photographer:</label>
+                               <select name="ass" id="ass" class="form-control">
+                                {% for assistant in assistants %}
+                                    {% if assistant.applied %}
+                                    <option value="{{ assistant.id }}">
+                                        {{ assistant.name }}
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                               </select>
+                               <small class="form-text text-muted">Only showing assistant photographers who have applied for this event.</small>
+                            </div>
+                            
+                            <div class="col-12 mt-3">
+                                {% for assistant in assistants %}
+                                    {% if assistant.applied %}
+                                    <div class="card mb-3 application-card" data-assistant-id="{{ assistant.id }}" style="display: none;">
+                                        <div class="card-header bg-light">
+                                            <strong>Application from {{ assistant.name }}</strong>
+                                        </div>
+                                        <div class="card-body">
+                                            <p>{{ assistant.message }}</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    <button type="submit" class="btn btn-primary w-100">Assign Assistant</button>
+                    </form>
+                    {% if data %}
+                    <table class="table">
+                        <tr><th>ID</th><th>Event</th><th>Assistant</th></tr>
+                        {% for d in data %}
+                        <tr>
+                            <td>{{d.id}}</td><td>{{d.evid.Event}}</td><td>{{d.asisst.name}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {% else %}
+                    <h2>
+                        No replay 
+                    </h2>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="col-lg-5">
+                <div class="order-summary p-4 rounded shadow-sm">
+                   
+                    
+<!--                        
+                    <div class="order__total mt-4">
+                        <p class="text-muted">Total Amount</p>
+                        <h5 class="font-weight-bold">${{ discounted_total|floatformat:2 }}</h5>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Order Section End -->
+
+<script>
+    // Function to show application message when an assistant is selected
+    document.addEventListener('DOMContentLoaded', function() {
+        const assistantSelect = document.getElementById('ass');
+        const applicationCards = document.querySelectorAll('.application-card');
+        
+        // Function to show the selected assistant's application
+        function showSelectedApplication() {
+            const selectedAssistantId = assistantSelect.value;
+            
+            // Hide all application cards first
+            applicationCards.forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show the selected assistant's application if they applied
+            const selectedCard = document.querySelector(`.application-card[data-assistant-id="${selectedAssistantId}"]`);
+            if (selectedCard) {
+                selectedCard.style.display = 'block';
+            }
+        }
+        
+        // Show application on page load
+        showSelectedApplication();
+        
+        // Show application when selection changes
+        assistantSelect.addEventListener('change', showSelectedApplication);
+    });
+</script>
+
+{% endblock %}

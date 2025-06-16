@@ -1,0 +1,2321 @@
+{% extends "photograph/common_base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Loading Animation -->
+<div id="ai-loading" class="cyber-loading" style="display: none;">
+    <div class="cyber-loading-content">
+        <div class="ai-processing-animation">
+            <div class="camera-container">
+                <div class="camera">
+                    <div class="camera-body">
+                        <div class="camera-lens">
+                            <div class="lens-reflection"></div>
+                        </div>
+                        <div class="camera-flash"></div>
+                    </div>
+                    <div class="processing-beam"></div>
+                </div>
+                <div class="photo-stack">
+                    <div class="photo photo1"></div>
+                    <div class="photo photo2"></div>
+                    <div class="photo photo3"></div>
+                </div>
+                <div class="ai-brain">
+                    <div class="brain-pulse"></div>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div id="processing-status">Analyzing images...</div>
+                <div id="processing-details">Initializing AI models</div>
+            </div>
+        </div>
+        <h3 class="mt-4 text-center">Processing Your Photos with AI</h3>
+        <p class="text-center text-muted">This may take a few minutes. Please don't close this window.</p>
+    </div>
+</div>
+
+<!-- Success Message Modal -->
+<div class="modal fade" id="processingSuccessModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-check-circle mr-2"></i> Processing Complete!</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="success-checkmark">
+                        <div class="check-icon">
+                            <span class="icon-line line-tip"></span>
+                            <span class="icon-line line-long"></span>
+                            <div class="icon-circle"></div>
+                            <div class="icon-fix"></div>
+                        </div>
+                    </div>
+                    <h4 id="success-message">Your images have been successfully processed!</h4>
+                    <p id="success-details" class="text-muted"></p>
+                </div>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="feature-icon mb-2">
+                            <i class="fas fa-comment-alt fa-2x text-primary"></i>
+                        </div>
+                        <h5>Captions</h5>
+                        <p class="small text-muted">AI-generated descriptions for your photos</p>
+                    </div>
+                    <div class="col-6">
+                        <div class="feature-icon mb-2">
+                            <i class="fas fa-smile fa-2x text-primary"></i>
+                        </div>
+                        <h5>Emotions</h5>
+                        <p class="small text-muted">Detected emotions in faces</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="view-results-btn">View Results</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Processing Started Modal -->
+<div class="modal fade" id="processingStartedModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title"><i class="fas fa-spinner mr-2"></i> Processing Started!</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>AI processing has started. Please wait for the processing to complete.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Face Group Modal -->
+<div class="modal fade" id="faceGroupModal" tabindex="-1" role="dialog" aria-labelledby="faceGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="faceGroupModalLabel">Face Group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">Representative Face</h5>
+                            </div>
+                            <img id="modalRepresentativeFace" src="" class="card-img-top" alt="Representative Face">
+                            <div class="card-body">
+                                <p class="card-text text-center" id="modalGroupName">Group Name</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h5>All Matching Faces</h5>
+                        <div id="modalMatchingFaces" class="d-flex flex-wrap">
+                            <!-- Matching faces will be inserted here by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div id="modalOriginalImages"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="showInMainView()">View in Main Tab</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Photos Modal -->
+<div class="modal fade" id="exportPhotosModal" tabindex="-1" role="dialog" aria-labelledby="exportPhotosModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="exportPhotosModalLabel"><i class="fas fa-file-export mr-2"></i> Export Selected Photos</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="duplicate-warning" class="mb-3" style="display: none;">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle mr-2"></i> Some selected images have already been exported and will be skipped:
+                        <ul id="duplicate-list" class="mt-2 mb-0"></ul>
+                    </div>
+                </div>
+                
+                <div id="new-images-container" class="mb-3">
+                    <h6><i class="fas fa-images mr-2"></i> Images to Export:</h6>
+                    <div id="new-images-list" class="row">
+                        <!-- New images will be displayed here dynamically -->
+                    </div>
+                </div>
+                
+                <div id="export-status" class="mt-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirm-export-btn">Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Confirmation Modal -->
+<div class="export-confirm-overlay" id="exportConfirmOverlay">
+    <div class="export-confirm-dialog">
+        <div class="export-confirm-header">
+            <h5>Confirm Export</h5>
+            <button type="button" class="close-btn" onclick="closeExportConfirm()">&times;</button>
+        </div>
+        <div class="export-confirm-body">
+            <p id="exportSummary"></p>
+            <div id="exportDetails" class="mt-3">
+                <div id="exportingStatus" style="display:none;" class="mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border text-primary me-2" role="status">
+                            <span class="visually-hidden">Exporting...</span>
+                        </div>
+                        <span>Exporting selected images...</span>
+                    </div>
+                </div>
+                <div id="exportResult" style="display:none;" class="mb-3"></div>
+            </div>
+        </div>
+        <div class="export-confirm-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeExportConfirm()">Cancel</button>
+            <button type="button" class="btn btn-primary" id="confirmExportBtn">Export Selected</button>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 p-0">
+            <div class="sidebar border-right h-100 py-3">
+                <div class="d-flex justify-content-center mb-4">
+                    <h4 class="text-primary">Editor Dashboard</h4>
+                </div>
+                
+                <div class="nav flex-column nav-pills" id="dashboard-tabs" role="tablist">
+                    <a class="nav-link active" id="photos-tab" data-toggle="pill" href="#photos" role="tab">
+                        <i class="fas fa-images mr-2"></i> My Photos
+                    </a>
+                    <a class="nav-link" id="emotions-tab" data-toggle="pill" href="#emotions" role="tab">
+                        <i class="fas fa-smile mr-2"></i> Emotions
+                    </a>
+                    <a class="nav-link" id="rep-faces-tab" data-toggle="pill" href="#rep-faces" role="tab">
+                        <i class="fas fa-user-circle mr-2"></i> Representative Faces
+                    </a>
+                    <a class="nav-link" id="ai-results-tab" data-toggle="pill" href="#ai-results" role="tab">
+                        <i class="fas fa-robot mr-2"></i> AI Results
+                    </a>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="d-flex flex-column px-3">
+                    <button id="run-ai-btn" class="btn btn-primary mb-3" onclick="processAI()">
+                        <i class="fas fa-robot mr-2"></i> Process Images with AI
+                    </button>
+
+                    <a href="{% url 'myphoto' %}" class="btn btn-outline-secondary mb-3">
+                        <i class="fas fa-photo-video mr-2"></i> Manage Photos
+                    </a>
+                    <a href="{% url 'photohome' %}" class="btn btn-outline-info">
+                        <i class="fas fa-home mr-2"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 p-0">
+            <div class="content-wrapper p-4">
+                <div class="tab-content" id="dashboard-content">
+                    <br>
+                    
+                    <!-- Photos Tab -->
+                    <div class="tab-pane fade show active" id="photos" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0"><i class="fas fa-images text-primary mr-2"></i> My Photos</h2>
+                            <div class="d-flex">
+                                <span class="badge badge-primary mr-3">{{ photos|length }} Photos</span>
+                                <br><br>
+                                <button id="export-selected-btn" class="btn btn-success btn-sm" onclick="exportSelectedPhotos()" disabled>
+                                    <i class="fas fa-file-export mr-1"></i> Export Selected
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden CSRF token for AJAX requests -->
+                        {% csrf_token %}
+                        
+                        {% if photos %}
+                            <div class="row">
+                                {% for photo in photos %}
+                                    <div class="col-md-4 col-lg-3 mb-4">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="position-absolute" style="top: 10px; right: 10px; z-index: 10;">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input photo-select-checkbox" 
+                                                        id="select-{{ photo.name }}" data-photo-path="{{ photo.path }}" 
+                                                        data-photo-name="{{ photo.name }}" data-photo-url="{{ photo.url }}">
+                                                    <label class="custom-control-label" for="select-{{ photo.name }}"></label>
+                                                </div>
+                                            </div>
+                                            <img src="{{ photo.url }}" class="card-img-top photo-thumbnail" alt="{{ photo.name }}"
+                                                 data-photo-name="{{ photo.name }}">
+                                            <div class="card-body">
+                                                <h6 class="card-title text-truncate">{{ photo.name }}</h6>
+                                                {% if ai_processed %}
+                                                    {% for caption in captions %}
+                                                        {% if caption.name == photo.name %}
+                                                            <p class="card-text small text-muted">{{ caption.caption }}</p>
+                                                            <span class="badge badge-info">{{ caption.emotion }}</span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i> No photos found. Please upload photos from your gallery.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Emotions Tab -->
+                    <div class="tab-pane fade" id="emotions" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0"><i class="fas fa-smile text-primary mr-2"></i> Photos by Emotion</h2>
+                        </div>
+                        
+                        {% if emotions_categorized %}
+                            <ul class="nav nav-tabs mb-4" id="emotions-tabs" role="tablist">
+                                {% for emotion_group in emotions_categorized %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if forloop.first %}active{% endif %}" 
+                                       id="emotion-{{ emotion_group.name|slugify }}-tab" 
+                                       data-toggle="tab" 
+                                       href="#emotion-{{ emotion_group.name|slugify }}" 
+                                       role="tab">
+                                        {{ emotion_group.name }} 
+                                        <span class="badge badge-pill badge-primary ml-1">{{ emotion_group.count }}</span>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <div class="tab-content">
+                                {% for emotion_group in emotions_categorized %}
+                                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                                     id="emotion-{{ emotion_group.name|slugify }}" 
+                                     role="tabpanel">
+                                    <h4 class="mb-3">{{ emotion_group.name }}</h4>
+                                    <div class="row">
+                                        {% for photo in emotion_group.photos %}
+                                        <div class="col-md-4 col-lg-3 mb-4">
+                                            <div class="card h-100 shadow-sm emotion-card">
+                                                <div class="card-header text-white {% if emotion_group.name == 'Happy' %}bg-success{% elif emotion_group.name == 'Sad' %}bg-info{% elif emotion_group.name == 'Angry' %}bg-danger{% elif emotion_group.name == 'Surprise' %}bg-warning{% elif emotion_group.name == 'Fear' %}bg-purple{% elif emotion_group.name == 'Disgust' %}bg-teal{% else %}bg-secondary{% endif %}">
+                                                    <h6 class="mb-0">{{ emotion_group.name }}</h6>
+                                                </div>
+                                                <img src="{{ photo.url }}" class="card-img-top emotion-img" alt="{{ photo.name }}">
+                                                <div class="card-body">
+                                                    <h6 class="card-title text-truncate">{{ photo.name }}</h6>
+                                                    <p class="card-text small text-muted">{{ photo.caption }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i> No emotion data available yet. Try processing your images with AI.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Faces Tab -->
+                    <div class="tab-pane fade" id="faces" role="tabpanel">
+                        <h2 class="mb-4"><i class="fas fa-users text-primary mr-2"></i> Detected Face Groups</h2>
+                        
+                        {% if face_groups %}
+                            <div class="row">
+                                {% for group in face_groups %}
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card h-100 border-primary shadow-sm">
+                                            <div class="card-header bg-primary text-white">
+                                                <h5 class="mb-0">{{ group.name }} <span class="badge badge-light ml-2">{{ group.count }} photos</span></h5>
+                                            </div>
+                                            <div class="card-body face-group-{{ group.group_id }}">
+                                                <div class="face-group-thumbnails d-flex flex-wrap">
+                                                    {% for face in group.faces %}
+                                                        <div class="face-thumbnail m-1">
+                                                            <img src="{{ face.url }}" class="img-thumbnail face-img" 
+                                                                alt="{{ face.name }}" title="{{ face.name }}" 
+                                                                data-group-id="{{ group.group_id }}">
+                                                            {% if face.emotion and face.emotion != "Unknown" %}
+                                                            <div class="face-emotion-info mt-1">
+                                                                <span class="badge badge-pill badge-info">{{ face.emotion }}</span>
+                                                                {% if face.age > 0 %}
+                                                                <span class="badge badge-pill badge-secondary">Age: {{ face.age }}</span>
+                                                                {% endif %}
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i> No face groups detected yet. Try processing your images with AI.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Representative Faces Tab -->
+                    <div class="tab-pane fade" id="rep-faces" role="tabpanel">
+                        <h2 class="mb-4"><i class="fas fa-user-circle text-success mr-2"></i> Representative Faces</h2>
+                        
+                        {% if random_faces %}
+                            <div class="row">
+                                {% for face in random_faces %}
+                                    <div class="col-md-3 mb-4">
+                                        <div class="card h-100 border-success shadow-sm">
+                                            <div class="card-header bg-success text-white">
+                                                <h5 class="mb-0">{{ face.group }}</h5>
+                                            </div>
+                                            <img src="{{ face.url }}" class="card-img-top representative-face" alt="{{ face.name }}" 
+                                                 data-group-id="{{ face.group_id }}" onclick="handleFaceClick(this)">
+                                            <div class="card-body">
+                                                <p class="card-text small text-muted">{{ face.name }}</p>
+                                                {% if face.emotion and face.emotion != "Unknown" %}
+                                                <div class="mt-2">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="badge badge-pill badge-info">{{ face.emotion }}</span>
+                                                        {% if face.age > 0 %}
+                                                        <span class="badge badge-pill badge-secondary">Age: {{ face.age }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if face.emotion_scores %}
+                                                    <div class="emotion-chart mt-2">
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-danger" role="progressbar" 
+                                                                style="width: {{ face.emotion_scores.angry|floatformat:0 }}%;" 
+                                                                aria-valuenow="{{ face.emotion_scores.angry|floatformat:0 }}" 
+                                                                aria-valuemin="0" 
+                                                                aria-valuemax="100" 
+                                                                title="Angry: {{ face.emotion_scores.angry|floatformat:1 }}%">
+                                                            </div>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-warning" role="progressbar" 
+                                                                style="width: {{ face.emotion_scores.fear|floatformat:0 }}%;" 
+                                                                aria-valuenow="{{ face.emotion_scores.fear|floatformat:0 }}" 
+                                                                aria-valuemin="0" 
+                                                                aria-valuemax="100" 
+                                                                title="Fear: {{ face.emotion_scores.fear|floatformat:1 }}%">
+                                                            </div>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-primary" role="progressbar" 
+                                                                style="width: {{ face.emotion_scores.happy|floatformat:0 }}%;" 
+                                                                aria-valuenow="{{ face.emotion_scores.happy|floatformat:0 }}" 
+                                                                aria-valuemin="0" 
+                                                                aria-valuemax="100" 
+                                                                title="Happy: {{ face.emotion_scores.happy|floatformat:1 }}%">
+                                                            </div>
+                                                        </div>
+                                                        <div class="progress">
+                                                            <div class="progress-bar bg-info" role="progressbar" 
+                                                                style="width: {{ face.emotion_scores.sad|floatformat:0 }}%;" 
+                                                                aria-valuenow="{{ face.emotion_scores.sad|floatformat:0 }}" 
+                                                                aria-valuemin="0" 
+                                                                aria-valuemax="100" 
+                                                                title="Sad: {{ face.emotion_scores.sad|floatformat:1 }}%">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i> No representative faces available yet. Try processing your images with AI.
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- AI Results Tab -->
+                    <div class="tab-pane fade" id="ai-results" role="tabpanel">
+                        <h2 class="mb-4"><i class="fas fa-robot text-primary mr-2"></i> AI Processing Results</h2>
+                        
+                        {% if ai_processed %}
+                            <div class="alert alert-success">
+                                <h4 class="alert-heading"><i class="fas fa-check-circle mr-2"></i> AI Processing Complete!</h4>
+                                <p>Your images have been processed successfully.</p>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>Total Photos:</strong> {{ photos|length }}</p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>Faces Detected:</strong> 
+                                            {% if face_groups %}
+                                                {{ face_groups|length }}
+                                            {% else %}
+                                                0
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1"><strong>Last Processed:</strong> {% now "F j, Y, g:i a" %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Captions Gallery -->
+                            <div class="card mt-4">
+                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0"><i class="fas fa-image mr-2"></i> Generated Captions</h5>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-light" id="view-grid-btn"><i class="fas fa-th"></i></button>
+                                        <button class="btn btn-sm btn-light" id="view-table-btn"><i class="fas fa-table"></i></button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Grid View -->
+                                <div class="card-body" id="grid-view">
+                                    <div class="row">
+                                        {% for caption in captions %}
+                                            <div class="col-md-4 col-lg-3 mb-4">
+                                                <div class="card h-100 shadow-sm hover-card">
+                                                    <div class="position-relative">
+                                                        <img src="{{ caption.url }}" class="card-img-top" alt="{{ caption.name }}">
+                                                        <div class="position-absolute top-0 right-0 m-2">
+                                                            <span class="badge badge-pill badge-primary">{{ caption.emotion }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <br>
+
+                                                        <p class="card-text">{{ caption.caption }}</p>
+                                                    </div>
+                                                    <div class="card-footer bg-transparent">
+                                                        <small class="text-muted">Age estimate: {{ caption.age|default:"Unknown" }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Table View -->
+                                <div class="card-body" id="table-view" style="display: none;">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover" id="photo-table">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Image</th>
+                                                    <th>Filename</th>
+                                                    <th>Caption</th>
+                                                    <th>Emotion</th>
+                                                    <th>Age</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for caption in captions %}
+                                                    <tr>
+                                                        <td>
+                                                            <img src="{{ caption.url }}" class="img-thumbnail" style="max-width: 100px; max-height: 100px;" alt="{{ caption.name }}">
+                                                        </td>
+                                                        <td>{{ caption.name }}</td>
+                                                        <td>{{ caption.caption }}</td>
+                                                        <td><span class="badge badge-pill badge-primary">{{ caption.emotion }}</span></td>
+                                                        <td>{{ caption.age|default:"Unknown" }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            
+                        {% else %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle mr-2"></i> No AI processing results available yet. Click the "Process Images with AI" button to analyze your photos.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include required CSS for face thumbnails -->
+<style>
+    .sidebar {
+        background-color: #343a40;
+        min-height: 100vh;
+        color: #fff;
+    }
+    
+    .main-content {
+        padding: 20px;
+    }
+    
+    .nav-link {
+        color: #fff;
+        border-radius: 0;
+    }
+    
+    .nav-link:hover {
+        background-color: #495057;
+    }
+    
+    .nav-link.active {
+        background-color: #007bff;
+        color: #fff;
+    }
+    
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    .sidebar-header {
+        padding: 15px;
+        border-bottom: 1px solid #495057;
+    }
+    
+    .emotion-badge {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .face-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+    
+    .matching-face {
+        border: 3px solid #28a745 !important;
+        transform: scale(1.05);
+    }
+    
+    .representative-face {
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    #modalMatchingFaces {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    
+    /* Animation styles */
+    .ai-processing-animation {
+        position: relative;
+        width: 100%;
+        height: 200px;
+        margin: 40px auto;
+    }
+    
+    .camera-container {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+    }
+    
+    .camera {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .camera-body {
+        position: relative;
+        width: 80%;
+        height: 80%;
+        background-color: #fff;
+        border-radius: 10px;
+        margin: 10% auto;
+    }
+    
+    .camera-lens {
+        position: relative;
+        width: 50%;
+        height: 50%;
+        background-color: #ccc;
+        border-radius: 50%;
+        margin: 25% auto;
+    }
+    
+    .lens-reflection {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20%;
+        height: 20%;
+        background-color: #fff;
+        border-radius: 50%;
+    }
+    
+    .camera-flash {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 20%;
+        height: 20%;
+        background-color: #ff9900;
+        border-radius: 50%;
+    }
+    
+    .progress-container {
+        margin-top: 20px;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        height: 10px;
+        background-color: #ccc;
+        border-radius: 10px;
+    }
+    
+    .progress-fill {
+        width: 0;
+        height: 100%;
+        background-color: #4CAF50;
+        border-radius: 10px;
+    }
+    
+    /* Face thumbnails */
+    .face-thumbnail {
+        position: relative;
+        margin-bottom: 10px;
+    }
+    
+    /* Exported photo styling */
+    .exported-photo .card-img-top {
+        opacity: 0.6;
+    }
+    
+    .exported-photo .card {
+        border: 2px solid #28a745;
+    }
+    
+    .exported-badge {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: #28a745;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        z-index: 5;
+    }
+    
+    /* New images display in modal */
+    #new-images-list .export-preview-img {
+        height: 100px;
+        object-fit: cover;
+        margin-bottom: 5px;
+    }
+    
+    #new-images-list .export-preview-card {
+        margin-bottom: 15px;
+    }
+    
+    /* Export confirmation dialog */
+    .export-confirm-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .export-confirm-dialog {
+        background-color: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+    
+    .export-confirm-header {
+        background-color: #007bff;
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .export-confirm-header h5 {
+        margin: 0;
+    }
+    
+    .export-confirm-header .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+    
+    .export-confirm-body {
+        padding: 20px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .export-confirm-footer {
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    
+    /* Emotion card styles */
+    .emotion-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .emotion-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+    }
+    
+    .emotion-img {
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.3s ease;
+    }
+    
+    .emotion-card:hover .emotion-img {
+        transform: scale(1.05);
+    }
+    
+    /* Custom emotion colors */
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+    
+    .bg-teal {
+        background-color: #20c997;
+    }
+    
+    /* Tab styling */
+    #emotions-tabs .nav-link {
+        color: #495057;
+        border-radius: 0.25rem 0.25rem 0 0;
+        padding: 0.75rem 1.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    #emotions-tabs .nav-link.active {
+        color: #007bff;
+        font-weight: 500;
+    }
+    
+    #emotions-tabs .badge {
+        transition: all 0.3s ease;
+    }
+    
+    #emotions-tabs .nav-link:hover .badge {
+        transform: scale(1.1);
+    }
+</style>
+
+<!-- AI Processing JavaScript -->
+<script>
+    // Add event listener to view results button
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the view results button
+        document.getElementById('view-results-btn').addEventListener('click', function() {
+            // Hide success modal
+            $('#processingSuccessModal').modal('hide');
+            
+            // Switch to AI results tab
+            $('#dashboard-tabs a[href="#ai-results"]').tab('show');
+            
+            // Scroll to the AI results section
+            setTimeout(function() {
+                document.getElementById('ai-results').scrollIntoView({behavior: 'smooth'});
+            }, 300);
+        });
+        
+        // Add animation to the camera flash
+        const cameraFlash = document.querySelector('.camera-flash');
+        if (cameraFlash) {
+            cameraFlash.style.animation = 'camera-flash 3s infinite';
+        }
+    });
+    
+    // Loading animation sequence
+    let animationInterval;
+    let processingSteps = [
+        { status: "Initializing AI models", details: "Loading BLIP image captioning model" },
+        { status: "Preparing for analysis", details: "Setting up DeepFace for emotion detection" },
+        { status: "Analyzing images", details: "Detecting faces in your photos" },
+        { status: "Processing captions", details: "Generating descriptions for each image" },
+        { status: "Detecting emotions", details: "Analyzing facial expressions" },
+        { status: "Finalizing results", details: "Saving processed data" }
+    ];
+    let currentStep = 0;
+    
+    function startLoadingAnimation() {
+        // Reset animation state
+        currentStep = 0;
+        updateProcessingStatus(processingSteps[currentStep].status, processingSteps[currentStep].details);
+        
+        // Animate the progress bar with steps
+        animationInterval = setInterval(function() {
+            currentStep = (currentStep + 1) % processingSteps.length;
+            updateProcessingStatus(processingSteps[currentStep].status, processingSteps[currentStep].details);
+            
+            // Update progress bar
+            const progressFill = document.querySelector('.progress-fill');
+            if (progressFill) {
+                // Make the progress bar fill up based on the current step
+                const progressPercentage = ((currentStep + 1) / processingSteps.length) * 100;
+                progressFill.style.width = `${progressPercentage}%`;
+                progressFill.style.animation = 'none'; // Stop the default animation
+            }
+            
+            // Add visual effects based on current step
+            if (currentStep === 1) {
+                document.querySelector('.camera-lens').style.backgroundColor = '#4CAF50';
+            } else if (currentStep === 2) {
+                document.querySelector('.photo-stack').style.transform = 'translateX(-50%) translateY(-10px)';
+            } else if (currentStep === 3) {
+                document.querySelector('.brain-pulse').style.backgroundColor = '#ff9900';
+            } else if (currentStep === 4) {
+                document.querySelector('.processing-beam').style.backgroundColor = '#2196F3';
+            } else {
+                // Reset effects
+                document.querySelector('.camera-lens').style.backgroundColor = '#ccc';
+                document.querySelector('.photo-stack').style.transform = 'translateX(-50%)';
+                document.querySelector('.brain-pulse').style.backgroundColor = '#fff';
+                document.querySelector('.processing-beam').style.backgroundColor = '#4CAF50';
+            }
+        }, 3000);
+    }
+    
+    function stopLoadingAnimation() {
+        // Clear the animation interval
+        clearInterval(animationInterval);
+        
+        // Reset all animated elements to their initial state
+        const cameraFlash = document.querySelector('.camera-flash');
+        const cameraLens = document.querySelector('.camera-lens');
+        const photoStack = document.querySelector('.photo-stack');
+        const brainPulse = document.querySelector('.brain-pulse');
+        const processingBeam = document.querySelector('.processing-beam');
+        const progressFill = document.querySelector('.progress-fill');
+        
+        // Reset camera flash animation
+        if (cameraFlash) {
+            cameraFlash.style.animation = 'none';
+        }
+        
+        // Reset camera lens
+        if (cameraLens) {
+            cameraLens.style.backgroundColor = '#ccc';
+        }
+        
+        // Reset photo stack
+        if (photoStack) {
+            photoStack.style.transform = 'translateX(-50%)';
+        }
+        
+        // Reset brain pulse
+        if (brainPulse) {
+            brainPulse.style.backgroundColor = '#fff';
+        }
+        
+        // Reset processing beam
+        if (processingBeam) {
+            processingBeam.style.backgroundColor = '#4CAF50';
+        }
+        
+        // Reset progress bar
+        if (progressFill) {
+            progressFill.style.width = '0%';
+            progressFill.style.animation = 'none';
+        }
+        
+        // Reset processing status text
+        updateProcessingStatus("Processing complete", "All tasks finished");
+    }
+    
+    function updateProcessingStatus(status, details) {
+        const statusElement = document.getElementById('processing-status');
+        const detailsElement = document.getElementById('processing-details');
+        
+        if (statusElement) {
+            statusElement.textContent = status;
+        }
+        
+        if (detailsElement) {
+            detailsElement.textContent = details;
+        }
+    }
+    
+    function processAI() {
+        // Show loading animation
+        document.getElementById('ai-loading').style.display = 'block';
+        
+        // Initialize animation sequence
+        startLoadingAnimation();
+        
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
+        // Get the photographer ID from the page (can be set in your HTML via Django template)
+        const photographerId = '{{ request.session.pid }}';
+        
+        // Send AJAX request
+        fetch('/process-ai/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken
+            },
+            body: 'photographer_id=' + photographerId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Hide loading animation
+                document.getElementById('ai-loading').style.display = 'none';
+                stopLoadingAnimation();
+                
+                // Update success details
+                document.getElementById('success-details').textContent = `Processed ${data.processed_count || 'all'} images in ${data.processing_time || 'a few'} seconds.`;
+                
+                // Show success modal
+                $('#processingSuccessModal').modal('show');
+                
+                // Refresh the page content if needed
+                if (data.captions_generated) {
+                    // You could update the UI here to show new captions without a full page reload
+                    console.log("Captions were generated successfully");
+                }
+            } else if (data.status === 'processing' || data.status === 'started') {
+                // Show a message that processing has started
+                console.log("Processing started: " + data.message);
+                
+                // Show processing started message in a more user-friendly way
+                $('#processingStartedModal').modal('show');
+                
+                // Check status periodically
+                if (data.job_id) {
+                    setTimeout(checkProcessingStatus, 3000, data.job_id);
+                } else {
+                    // If no job_id, stop animation
+                    document.getElementById('ai-loading').style.display = 'none';
+                    stopLoadingAnimation();
+                }
+            } else {
+                // Only show error for actual error conditions
+                console.error('Error in AI processing: ' + data.message);
+                alert('Error in AI processing: ' + data.message);
+                
+                // Hide loading animation
+                document.getElementById('ai-loading').style.display = 'none';
+                stopLoadingAnimation();
+            }
+        })
+        .catch(error => {
+            // Hide loading animation
+            document.getElementById('ai-loading').style.display = 'none';
+            stopLoadingAnimation();
+            alert('Error: ' + error);
+        });
+    }
+    
+    // Function to check AI processing status
+    function checkProcessingStatus(jobId) {
+        console.log("Checking AI processing status for job ID:", jobId);
+        
+        fetch(`/check-ai-status/?job_id=${jobId}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Status update:", data);
+            
+            // Update the status display
+            updateProcessingStatus(data.status || "Processing", data.message || "Processing your images...");
+            
+            if (data.status === 'completed') {
+                // Hide loading animation
+                document.getElementById('ai-loading').style.display = 'none';
+                stopLoadingAnimation();
+                
+                // Show success message
+                document.getElementById('success-details').textContent = `Processing completed successfully.`;
+                $('#processingSuccessModal').modal('show');
+                
+                // Reload the page to show results after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else if (data.status === 'failed' || data.error) {
+                // Hide loading animation
+                document.getElementById('ai-loading').style.display = 'none';
+                stopLoadingAnimation();
+                
+                // Show error message
+                alert('AI processing failed: ' + (data.message || data.error || "Unknown error"));
+            } else {
+                // Still processing, check again after delay
+                setTimeout(checkProcessingStatus, 3000, jobId);
+            }
+        })
+        .catch(error => {
+            console.error('Error checking status:', error);
+            
+            // Hide loading animation on error
+            document.getElementById('ai-loading').style.display = 'none';
+            stopLoadingAnimation();
+            
+            alert('Error checking processing status: ' + error);
+        });
+    }
+    
+    // Function to show matching faces when clicking on a representative face
+    function showMatchingFaces(groupId) {
+        if (!groupId || groupId === 'None' || groupId === 'undefined' || groupId === 'null') {
+            console.error("Invalid group ID:", groupId);
+            alert("Cannot display matching faces: Invalid or missing group ID");
+            return;
+        }
+        
+        console.log("Showing matching faces for group ID:", groupId);
+        
+        // First, remove highlighting from any previously highlighted faces
+        document.querySelectorAll('.matching-face').forEach(el => {
+            el.classList.remove('matching-face');
+        });
+        
+        // Reset background color of all containers
+        document.querySelectorAll('.card-body').forEach(el => {
+            el.style.backgroundColor = "";
+        });
+        
+        // Find the representative face for this group
+        const representativeFace = document.querySelector(`img.representative-face[data-group-id="${groupId}"]`);
+        let groupName = "Unknown Group";
+        
+        if (representativeFace) {
+            // Get the group name from the card header
+            const cardHeader = representativeFace.closest('.card').querySelector('.card-header h5');
+            if (cardHeader) {
+                groupName = cardHeader.textContent;
+            }
+            
+            // Set the modal representative face
+            document.getElementById('modalRepresentativeFace').src = representativeFace.src;
+            document.getElementById('modalGroupName').textContent = groupName;
+        }
+        
+        // Find all faces that match this group ID
+        const matchingFacesList = document.querySelectorAll(`img[data-group-id="${groupId}"]`);
+        console.log(`Found ${matchingFacesList.length} matching face images with data-group-id=${groupId}`);
+        
+        // Clear any existing faces in the modal
+        const modalMatchingFaces = document.getElementById('modalMatchingFaces');
+        modalMatchingFaces.innerHTML = '';
+        
+        // Add all matching faces to the modal
+        matchingFacesList.forEach(face => {
+            if (!face.classList.contains('representative-face')) {
+                // Create a container for the face
+                const faceContainer = document.createElement('div');
+                faceContainer.className = 'face-thumbnail m-2';
+                
+                // Create an image element
+                const faceImg = document.createElement('img');
+                faceImg.src = face.src;
+                faceImg.className = 'img-thumbnail face-img matching-face';
+                faceImg.style.width = '100px';
+                faceImg.style.height = '100px';
+                faceImg.style.objectFit = 'cover';
+                
+                // Add the face image to the container
+                faceContainer.appendChild(faceImg);
+                
+                // Add the container to the modal
+                modalMatchingFaces.appendChild(faceContainer);
+            }
+        });
+        
+        // Show loading message
+        document.getElementById('modalOriginalImages').innerHTML = '<div class="text-center p-3"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Loading original images...</p></div>';
+        
+        // Fetch original images containing this face from the server
+        fetchOriginalImagesForFace(groupId);
+        
+        // Show the modal
+        $('#faceGroupModal').modal('show');
+        
+        // For the main view highlight also
+        highlightMatchingFacesInMainView(groupId);
+    }
+    
+    // Function to fetch original images containing the selected face
+    function fetchOriginalImagesForFace(groupId) {
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+        
+        // Fetch matching original images from server
+        fetch(`/get-matching-faces/?group_id=${groupId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Clear loading message
+            const originalImagesContainer = document.getElementById('modalOriginalImages');
+            originalImagesContainer.innerHTML = '';
+            
+            if (data.status === 'success') {
+                // Display the images
+                if (data.images && data.images.length > 0) {
+                    // Create container for export button
+                    const actionBar = document.createElement('div');
+                    actionBar.className = 'd-flex justify-content-between align-items-center mb-3';
+                    
+                    // Create header
+                    const header = document.createElement('h4');
+                    header.className = 'mb-0';
+                    header.textContent = `All Photos Containing This Person (${data.images.length})`;
+                    
+                    // Create export button
+                    const exportBtn = document.createElement('button');
+                    exportBtn.className = 'btn btn-primary btn-sm';
+                    exportBtn.innerHTML = '<i class="fas fa-file-export mr-1"></i> Export Selected';
+                    exportBtn.id = 'modal-export-selected-btn';
+                    exportBtn.disabled = true;
+                    exportBtn.onclick = function() { exportSelectedModalPhotos(); };
+                    
+                    // Add header and button to action bar
+                    actionBar.appendChild(header);
+                    actionBar.appendChild(exportBtn);
+                    
+                    // Add action bar to container
+                    originalImagesContainer.appendChild(actionBar);
+                    
+                    // Create row for the images
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    
+                    // Track selected modal photos
+                    window.selectedModalPhotos = new Map();
+                    
+                    // Add each image
+                    data.images.forEach(image => {
+                        // Create column
+                        const col = document.createElement('div');
+                        col.className = 'col-md-4 mb-3';
+                        
+                        // Create card
+                        const card = document.createElement('div');
+                        card.className = 'card h-100';
+                        
+                        // Add checkbox for selection
+                        const checkboxContainer = document.createElement('div');
+                        checkboxContainer.className = 'position-absolute';
+                        checkboxContainer.style.top = '10px';
+                        checkboxContainer.style.right = '10px';
+                        checkboxContainer.style.zIndex = '10';
+                        
+                        const checkboxWrapper = document.createElement('div');
+                        checkboxWrapper.className = 'custom-control custom-checkbox';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'custom-control-input modal-photo-select-checkbox';
+                        checkbox.id = `select-modal-${image.name}`;
+                        checkbox.setAttribute('data-photo-name', image.name);
+                        checkbox.setAttribute('data-photo-url', image.url);
+                        
+                        // Add event listener for checkbox
+                        checkbox.addEventListener('change', function() {
+                            if (this.checked) {
+                                // Check if photo is already exported
+                                const isAlreadyExported = isPhotoExported(image.name);
+                                
+                                selectedModalPhotos.set(image.name, {
+                                    name: image.name,
+                                    url: image.url,
+                                    exported: isAlreadyExported
+                                });
+                            } else {
+                                selectedModalPhotos.delete(image.name);
+                            }
+                            
+                            // Update export button state
+                            updateModalExportButtonState();
+                        });
+                        
+                        const checkboxLabel = document.createElement('label');
+                        checkboxLabel.className = 'custom-control-label';
+                        checkboxLabel.setAttribute('for', `select-modal-${image.name}`);
+                        
+                        checkboxWrapper.appendChild(checkbox);
+                        checkboxWrapper.appendChild(checkboxLabel);
+                        checkboxContainer.appendChild(checkboxWrapper);
+                        
+                        // Create image
+                        const img = document.createElement('img');
+                        img.src = image.url;
+                        img.className = 'card-img-top';
+                        img.alt = image.name;
+                        img.style.objectFit = 'cover';
+                        img.style.height = '200px';
+                        img.setAttribute('data-photo-name', image.name);
+                        
+                        // Create card body
+                        const cardBody = document.createElement('div');
+                        cardBody.className = 'card-body';
+                        
+                        // Create caption
+                        const caption = document.createElement('p');
+                        caption.className = 'card-text small';
+                        caption.textContent = image.name;
+                        
+                        // Create face count badge
+                        const faceBadge = document.createElement('span');
+                        faceBadge.className = 'badge bg-info';
+                        faceBadge.textContent = `${image.faces} face${image.faces !== 1 ? 's' : ''}`;
+                        
+                        // Check if this photo was already exported
+                        if (isPhotoExported(image.name)) {
+                            col.classList.add('exported-photo');
+                            
+                            // Add exported badge
+                            const exportedBadge = document.createElement('div');
+                            exportedBadge.className = 'exported-badge';
+                            exportedBadge.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Exported';
+                            card.appendChild(exportedBadge);
+                        }
+                        
+                        // Add elements to card body
+                        cardBody.appendChild(caption);
+                        cardBody.appendChild(faceBadge);
+                        
+                        // Add elements to card
+                        card.appendChild(checkboxContainer);
+                        card.appendChild(img);
+                        card.appendChild(cardBody);
+                        
+                        // Add card to column
+                        col.appendChild(card);
+                        
+                        // Add column to row
+                        row.appendChild(col);
+                    });
+                    
+                    // Add row to container
+                    originalImagesContainer.appendChild(row);
+                } else {
+                    originalImagesContainer.innerHTML = '<div class="alert alert-info">No original images found containing this face.</div>';
+                }
+            } else {
+                originalImagesContainer.innerHTML = `<div class="alert alert-danger">Error: ${data.message}</div>`;
+            }
+        })
+        .catch(error => {
+            const originalImagesContainer = document.getElementById('modalOriginalImages');
+            originalImagesContainer.innerHTML = `<div class="alert alert-danger">Error fetching matching images: ${error}</div>`;
+        });
+    }
+    
+    // Update modal export button state based on selection
+    function updateModalExportButtonState() {
+        const exportBtn = document.getElementById('modal-export-selected-btn');
+        if (exportBtn) {
+            exportBtn.disabled = selectedModalPhotos.size === 0;
+        }
+    }
+    
+    // Filter out already exported modal photos
+    function getNewModalPhotosToExport() {
+        const newPhotos = [];
+        const duplicates = [];
+        
+        selectedModalPhotos.forEach(photo => {
+            if (isPhotoExported(photo.name)) {
+                duplicates.push(photo);
+            } else {
+                newPhotos.push(photo);
+            }
+        });
+        
+        return { newPhotos, duplicates };
+    }
+    
+    // Export selected photos from the modal
+    function exportSelectedModalPhotos() {
+        // Get only new photos to export
+        const { newPhotos, duplicates } = getNewModalPhotosToExport();
+        
+        // Create modal content for confirmation
+        const modalContent = document.createElement('div');
+        
+        // Show warning for duplicates if any
+        if (duplicates.length > 0) {
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'alert alert-warning';
+            warningDiv.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> ${duplicates.length} selected image(s) have already been exported and will be skipped.`;
+            modalContent.appendChild(warningDiv);
+        }
+        
+        // Show export information
+        const infoDiv = document.createElement('div');
+        if (newPhotos.length > 0) {
+            infoDiv.className = 'alert alert-info';
+            infoDiv.innerHTML = `<i class="fas fa-info-circle mr-2"></i> ${newPhotos.length} image(s) will be exported.`;
+        } else {
+            infoDiv.className = 'alert alert-danger';
+            infoDiv.innerHTML = '<i class="fas fa-times-circle mr-2"></i> No new images to export.';
+        }
+        modalContent.appendChild(infoDiv);
+        
+        // Create loading/status element
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'modal-export-status';
+        modalContent.appendChild(statusDiv);
+        
+        // Create buttons
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = function() {
+            document.getElementById('modal-export-status').innerHTML = '';
+            document.getElementById('modal-export-confirm').style.display = 'none';
+        };
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.textContent = 'Export';
+        confirmBtn.disabled = newPhotos.length === 0;
+        confirmBtn.onclick = function() {
+            performModalExport(newPhotos);
+        };
+        
+        // Show the confirmation modal
+        const modalDiv = document.createElement('div');
+        modalDiv.id = 'modal-export-confirm';
+        modalDiv.className = 'export-confirm-overlay';
+        modalDiv.innerHTML = `
+            <div class="export-confirm-dialog">
+                <div class="export-confirm-header">
+                    <h5><i class="fas fa-file-export mr-2"></i> Export Selected Photos</h5>
+                    <button class="close-btn" onclick="document.getElementById('modal-export-confirm').style.display='none'">&times;</button>
+                </div>
+                <div class="export-confirm-body" id="modal-export-confirm-body"></div>
+                <div class="export-confirm-footer" id="modal-export-confirm-footer"></div>
+            </div>
+        `;
+        
+        // Append to body
+        document.body.appendChild(modalDiv);
+        
+        // Add content to the modal
+        document.getElementById('modal-export-confirm-body').appendChild(modalContent);
+        
+        // Add buttons to footer
+        const footer = document.getElementById('modal-export-confirm-footer');
+        footer.appendChild(cancelBtn);
+        footer.appendChild(confirmBtn);
+        
+        // Show the modal
+        modalDiv.style.display = 'flex';
+    }
+    
+    // Perform the actual export
+    function performModalExport(photos) {
+        if (photos.length === 0) return;
+        
+        // Show loading status
+        document.getElementById('modal-export-status').innerHTML = 
+            '<div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-2"></i> Exporting photos...</div>';
+        
+        // Get CSRF token
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Prepare data for export
+        const exportData = {
+            photos: photos.map(photo => ({
+                name: photo.name,
+                url: photo.url.startsWith('/') ? photo.url : '/' + photo.url
+            })),
+            event_id: new URLSearchParams(window.location.search).get('event_id')
+        };
+        
+        console.log('Starting modal export with data:', exportData);
+        
+        // Send fetch request to export photos
+        fetch('/export-selected-photos/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(exportData)
+        })
+        .then(response => {
+            console.log('Export response received:', response);
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Export data:', data);
+            if (data.success) {
+                // Save exported filenames to localStorage
+                saveExportedPhotos(data.exported);
+                
+                // Show success message
+                document.getElementById('modal-export-status').innerHTML = 
+                    `<div class="alert alert-success">
+                        <p><i class="fas fa-check-circle mr-2"></i> ${data.message}</p>
+                    </div>`;
+                
+                // Update UI to mark exported photos
+                markExportedModalPhotos();
+                
+                // Disable confirm button
+                document.getElementById('modal-export-confirm-footer').querySelector('.btn-primary').disabled = true;
+            } else {
+                // Show error message
+                document.getElementById('modal-export-status').innerHTML = 
+                    `<div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle mr-2"></i> Error: ${data.message}
+                    </div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Export error:', error);
+            document.getElementById('modal-export-status').innerHTML = 
+                `<div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle mr-2"></i> Error: ${error.message}
+                </div>`;
+        });
+    }
+    
+    // Mark exported photos in the modal
+    function markExportedModalPhotos() {
+        const exportedPhotos = getExportedPhotos();
+        
+        document.querySelectorAll('#modalOriginalImages .card-img-top').forEach(img => {
+            const photoName = img.getAttribute('data-photo-name');
+            const card = img.closest('.col-md-4');
+            
+            if (exportedPhotos.includes(photoName)) {
+                card.classList.add('exported-photo');
+                
+                // Add exported badge if it doesn't exist
+                if (!card.querySelector('.exported-badge')) {
+                    const badge = document.createElement('div');
+                    badge.className = 'exported-badge';
+                    badge.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Exported';
+                    card.querySelector('.card').appendChild(badge);
+                }
+            }
+        });
+    }
+    
+    // Function to highlight matching faces in the main view
+    function highlightMatchingFacesInMainView(groupId) {
+        // Select all face images with the data-group-id attribute
+        const matchingFaces = document.querySelectorAll(`img[data-group-id="${groupId}"]`);
+        
+        // Add the matching-face class to each image
+        matchingFaces.forEach(face => {
+            face.classList.add('matching-face');
+            
+            // Also highlight the parent card body
+            const cardBody = face.closest('.card-body');
+            if (cardBody) {
+                cardBody.style.backgroundColor = "rgba(0, 123, 255, 0.1)";
+            }
+        });
+    }
+    
+    // Function to show matching faces in the main tab view
+    function showInMainView() {
+        // Close the modal
+        $('#faceGroupModal').modal('hide');
+        
+        // Then activate the faces tab
+        document.getElementById('faces-tab').click();
+        
+        // Find the first highlighted face
+        setTimeout(() => {
+            const firstMatchingFace = document.querySelector('.matching-face');
+            if (firstMatchingFace) {
+                // Find the parent card of the first matching face
+                const parentCard = firstMatchingFace.closest('.card');
+                if (parentCard) {
+                    parentCard.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                } else {
+                    firstMatchingFace.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            }
+        }, 300); // Small delay to ensure the tab has switched
+    }
+
+    // Enhance the representative face images with a hover effect
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.representative-face').forEach(face => {
+            face.style.cursor = 'pointer';
+            face.title = 'Click to view all matching faces';
+            
+            // Add hover effect
+            face.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+            });
+            
+            face.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    });
+    
+    // Store exported photos in localStorage
+    const STORAGE_KEY = 'exportedPhotos_{{ request.session.pid }}';
+    
+    // Get previously exported photos from localStorage
+    function getExportedPhotos() {
+        const exported = localStorage.getItem(STORAGE_KEY);
+        return exported ? JSON.parse(exported) : [];
+    }
+    
+    // Save exported photos to localStorage
+    function saveExportedPhotos(photos) {
+        const existing = getExportedPhotos();
+        const combined = [...existing, ...photos];
+        // Remove duplicates
+        const unique = [...new Set(combined)];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(unique));
+    }
+    
+    // Check if a photo has been exported before
+    function isPhotoExported(photoName) {
+        const exportedPhotos = getExportedPhotos();
+        return exportedPhotos.includes(photoName);
+    }
+    
+    // Track selected photos
+    const selectedPhotos = new Map();
+    
+    // Handle checkbox changes
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize UI to mark already exported photos
+        markExportedPhotos();
+        
+        // Add event listeners to checkboxes
+        document.querySelectorAll('.photo-select-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const photoName = this.getAttribute('data-photo-name');
+                const photoPath = this.getAttribute('data-photo-path');
+                const photoUrl = this.getAttribute('data-photo-url');
+                
+                if (this.checked) {
+                    selectedPhotos.set(photoName, {
+                        name: photoName,
+                        path: photoPath,
+                        url: photoUrl,
+                        exported: isPhotoExported(photoName)
+                    });
+                } else {
+                    selectedPhotos.delete(photoName);
+                }
+                
+                // Update export button state
+                updateExportButtonState();
+            });
+        });
+        
+        // Set up export confirmation button
+        document.getElementById('confirm-export-btn').addEventListener('click', function() {
+            performExport();
+        });
+    });
+    
+    // Mark already exported photos in the UI
+    function markExportedPhotos() {
+        const exportedPhotos = getExportedPhotos();
+        
+        document.querySelectorAll('.photo-thumbnail').forEach(img => {
+            const photoName = img.getAttribute('data-photo-name');
+            const card = img.closest('.col-md-4');
+            
+            if (exportedPhotos.includes(photoName)) {
+                card.classList.add('exported-photo');
+                
+                // Add exported badge if it doesn't exist
+                if (!card.querySelector('.exported-badge')) {
+                    const badge = document.createElement('div');
+                    badge.className = 'exported-badge';
+                    badge.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Exported';
+                    card.querySelector('.card').appendChild(badge);
+                }
+            }
+        });
+    }
+    
+    // Update export button state based on selection
+    function updateExportButtonState() {
+        const exportBtn = document.getElementById('export-selected-btn');
+        exportBtn.disabled = selectedPhotos.size === 0;
+    }
+    
+    // Filter out already exported photos and return only new ones
+    function getNewPhotosToExport() {
+        const newPhotos = [];
+        const duplicates = [];
+        
+        selectedPhotos.forEach(photo => {
+            if (isPhotoExported(photo.name)) {
+                duplicates.push(photo);
+            } else {
+                newPhotos.push(photo);
+            }
+        });
+        
+        return { newPhotos, duplicates };
+    }
+    
+    // Show export modal
+    function exportSelectedPhotos() {
+        if (selectedPhotos.size > 0) {
+            // Filter photos
+            const { newPhotos, duplicates } = getNewPhotosToExport();
+            
+            // Clear previous status
+            document.getElementById('export-status').innerHTML = '';
+            document.getElementById('duplicate-warning').style.display = 'none';
+            document.getElementById('duplicate-list').innerHTML = '';
+            document.getElementById('new-images-list').innerHTML = '';
+            
+            // Handle duplicates
+            if (duplicates.length > 0) {
+                document.getElementById('duplicate-warning').style.display = 'block';
+                const duplicateList = document.getElementById('duplicate-list');
+                
+                duplicates.forEach(photo => {
+                    const li = document.createElement('li');
+                    li.textContent = photo.name;
+                    duplicateList.appendChild(li);
+                });
+            }
+            
+            // Display new photos to export
+            const newImagesContainer = document.getElementById('new-images-list');
+            
+            if (newPhotos.length === 0) {
+                document.getElementById('export-status').innerHTML = 
+                    '<div class="alert alert-info">All selected images have already been exported.</div>';
+                document.getElementById('confirm-export-btn').disabled = true;
+            } else {
+                document.getElementById('confirm-export-btn').disabled = false;
+                
+                // Create preview of new images
+                newPhotos.forEach(photo => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-3 col-sm-4 col-6';
+                    col.innerHTML = `
+                        <div class="card export-preview-card">
+                            <img src="${photo.url}" class="card-img-top export-preview-img" alt="${photo.name}">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-truncate">${photo.name}</p>
+                            </div>
+                        </div>
+                    `;
+                    newImagesContainer.appendChild(col);
+                });
+            }
+            
+            // Display modal
+            $('#exportPhotosModal').modal('show');
+        }
+    }
+    
+    // Perform the actual export
+    function performExport() {
+        // Get only new photos to export
+        const { newPhotos } = getNewPhotosToExport();
+        
+        // Create modal content for confirmation
+        const modalContent = document.createElement('div');
+        
+        // Show warning for duplicates if any
+        if (newPhotos.length === 0) {
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'alert alert-info';
+            warningDiv.innerHTML = '<i class="fas fa-info-circle mr-2"></i> No new images to export.';
+            modalContent.appendChild(warningDiv);
+        } else {
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'alert alert-info';
+            warningDiv.innerHTML = `<i class="fas fa-info-circle mr-2"></i> ${newPhotos.length} image(s) will be exported.`;
+            modalContent.appendChild(warningDiv);
+        }
+        
+        // Create loading/status element
+        const statusDiv = document.createElement('div');
+        statusDiv.id = 'export-status';
+        modalContent.appendChild(statusDiv);
+        
+        // Create buttons
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = function() {
+            document.getElementById('export-status').innerHTML = '';
+            document.getElementById('export-confirm').style.display = 'none';
+        };
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.className = 'btn btn-primary';
+        confirmBtn.textContent = 'Export';
+        confirmBtn.disabled = newPhotos.length === 0;
+        confirmBtn.onclick = function() {
+            performActualExport(newPhotos);
+        };
+        
+        // Show the confirmation modal
+        const modalDiv = document.createElement('div');
+        modalDiv.id = 'export-confirm';
+        modalDiv.className = 'export-confirm-overlay';
+        modalDiv.innerHTML = `
+            <div class="export-confirm-dialog">
+                <div class="export-confirm-header">
+                    <h5><i class="fas fa-file-export mr-2"></i> Export Selected Photos</h5>
+                    <button class="close-btn" onclick="document.getElementById('export-confirm').style.display='none'">&times;</button>
+                </div>
+                <div class="export-confirm-body" id="export-confirm-body"></div>
+                <div class="export-confirm-footer" id="export-confirm-footer"></div>
+            </div>
+        `;
+        
+        // Append to body
+        document.body.appendChild(modalDiv);
+        
+        // Add content to the modal
+        document.getElementById('export-confirm-body').appendChild(modalContent);
+        
+        // Add buttons to footer
+        const footer = document.getElementById('export-confirm-footer');
+        footer.appendChild(cancelBtn);
+        footer.appendChild(confirmBtn);
+        
+        // Show the modal
+        modalDiv.style.display = 'flex';
+    }
+    
+    // Perform the actual export
+    function performActualExport(photos) {
+        if (photos.length === 0) return;
+        
+        // Show loading status
+        document.getElementById('export-status').innerHTML = 
+            '<div class="alert alert-info"><i class="fas fa-spinner fa-spin mr-2"></i> Exporting photos...</div>';
+        
+        // Get CSRF token
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Prepare data for export
+        const exportData = {
+            photos: photos.map(photo => ({
+                name: photo.name,
+                url: photo.url.startsWith('/') ? photo.url : '/' + photo.url
+            })),
+            event_id: new URLSearchParams(window.location.search).get('event_id')
+        };
+        
+        console.log('Starting export with data:', exportData);
+        
+        // Send fetch request to export photos
+        fetch('/export-selected-photos/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(exportData)
+        })
+        .then(response => {
+            console.log('Export response received:', response);
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Export data:', data);
+            if (data.success) {
+                // Save exported filenames to localStorage
+                saveExportedPhotos(data.exported);
+                
+                // Show success message
+                document.getElementById('export-status').innerHTML = 
+                    `<div class="alert alert-success">
+                        <p><i class="fas fa-check-circle mr-2"></i> ${data.message}</p>
+                    </div>`;
+                
+                // Update UI to mark exported photos
+                markExportedPhotos();
+                
+                // Disable confirm button
+                document.getElementById('export-confirm-footer').querySelector('.btn-primary').disabled = true;
+            } else {
+                // Show error message
+                document.getElementById('export-status').innerHTML = 
+                    `<div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle mr-2"></i> Error: ${data.message}
+                    </div>`;
+            }
+        })
+        .catch(error => {
+            console.error('Export error:', error);
+            document.getElementById('export-status').innerHTML = 
+                `<div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle mr-2"></i> Error: ${error.message}
+                </div>`;
+        });
+    }
+</script>
+
+<script>
+    // Function to handle face clicks and check if the group ID is valid
+    function handleFaceClick(faceElement) {
+        const groupId = faceElement.getAttribute('data-group-id');
+        if (groupId && groupId !== 'None' && groupId !== 'undefined' && groupId !== 'null') {
+            showMatchingFaces(groupId);
+        } else {
+            alert('No group ID available for this face');
+        }
+    }
+</script>
+
+<script>
+    // Track selected images
+    let selectedImages = new Map(); // Using Map to track selections and avoid duplicates
+    let exportInProgress = false;
+
+    // Initialize export functionality
+    function initializeExportFunctionality() {
+        // Add HTML for the export button to the modal
+        let exportButtonHTML = `
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+                <span id="selectedCount" class="text-muted">0 images selected</span>
+                <button id="exportSelectedBtn" class="btn btn-primary" disabled>
+                    Export Selected
+                </button>
+            </div>
+        `;
+        
+        // Check if the export button already exists
+        if (!document.getElementById('exportSelectedBtn')) {
+            const modalFooter = document.querySelector('#matchingImagesModal .modal-footer');
+            if (modalFooter) {
+                // Create wrapper div and append
+                const exportBtnWrapper = document.createElement('div');
+                exportBtnWrapper.className = 'w-100 mt-3';
+                exportBtnWrapper.innerHTML = exportButtonHTML;
+                modalFooter.appendChild(exportBtnWrapper);
+                
+                // Add event listener to the export button
+                document.getElementById('exportSelectedBtn').addEventListener('click', showExportConfirmation);
+            }
+        }
+    }
+
+    // Function to add checkboxes to matching images
+    function addCheckboxesToMatchingImages() {
+        const imageCards = document.querySelectorAll('#matchingImagesContainer .card');
+        
+        imageCards.forEach(card => {
+            // Check if this card already has a checkbox
+            if (card.querySelector('.image-checkbox')) {
+                return; // Skip if already has checkbox
+            }
+            
+            // Get the image information
+            const img = card.querySelector('img');
+            if (!img) return;
+            
+            const imgUrl = img.src;
+            const imgName = imgUrl.split('/').pop();
+            
+            // Create a checkbox control
+            const checkboxContainer = document.createElement('div');
+            checkboxContainer.className = 'image-checkbox position-absolute top-0 start-0 m-2';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'form-check-input';
+            checkbox.dataset.name = imgName;
+            checkbox.dataset.url = imgUrl;
+            checkbox.addEventListener('change', handleImageSelection);
+            
+            // Check localStorage to see if this image was already exported
+            const exportedImages = JSON.parse(localStorage.getItem('exportedImages') || '[]');
+            if (exportedImages.includes(imgName)) {
+                // Add a badge to indicate it's already exported
+                const exportedBadge = document.createElement('span');
+                exportedBadge.className = 'position-absolute top-0 end-0 m-2 badge bg-success';
+                exportedBadge.textContent = 'Exported';
+                card.appendChild(exportedBadge);
+            }
+            
+            checkboxContainer.appendChild(checkbox);
+            card.appendChild(checkboxContainer);
+            
+            // Make card clickable to toggle checkbox
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function(e) {
+                // Only toggle if the click is on the card (not on other controls)
+                if (e.target === card || e.target === img || e.target.classList.contains('card-body')) {
+                    checkbox.checked = !checkbox.checked;
+                    handleImageSelection({target: checkbox});
+                }
+            });
+        });
+        
+        // Initialize export button
+        initializeExportFunctionality();
+        updateSelectedCount();
+    }
+
+    // Handle image selection changes
+    function handleImageSelection(event) {
+        const checkbox = event.target;
+        const imgName = checkbox.dataset.name;
+        const imgUrl = checkbox.dataset.url;
+        
+        if (checkbox.checked) {
+            // Add to selected images
+            selectedImages.set(imgName, {name: imgName, url: imgUrl});
+        } else {
+            // Remove from selected images
+            selectedImages.delete(imgName);
+        }
+        
+        // Update the selected count display
+        updateSelectedCount();
+    }
+
+    // Update the selected count and button state
+    function updateSelectedCount() {
+        const countElement = document.getElementById('selectedCount');
+        const exportBtn = document.getElementById('exportSelectedBtn');
+        
+        if (countElement && exportBtn) {
+            const count = selectedImages.size;
+            countElement.textContent = `${count} image${count !== 1 ? 's' : ''} selected`;
+            exportBtn.disabled = count === 0 || exportInProgress;
+        }
+    }
+
+    // Show the export confirmation dialog
+    function showExportConfirmation() {
+        if (selectedImages.size === 0) {
+            return;
+        }
+        
+        // Check for duplicate (already exported) images
+        const exportedImages = JSON.parse(localStorage.getItem('exportedImages') || '[]');
+        const selectedArray = Array.from(selectedImages.values());
+        const potentialDuplicates = selectedArray.filter(img => exportedImages.includes(img.name));
+        
+        // Prepare the confirmation message
+        let confirmationMessage = `You are about to export ${selectedImages.size} selected image${selectedImages.size !== 1 ? 's' : ''}.`;
+        if (potentialDuplicates.length > 0) {
+            confirmationMessage += `<br><br><strong class="text-warning">${potentialDuplicates.length} image${potentialDuplicates.length !== 1 ? 's' : ''} may already exist in the export folder and will be skipped.</strong>`;
+        }
+        
+        // Update the summary in the confirmation dialog
+        document.getElementById('exportSummary').innerHTML = confirmationMessage;
+        
+        // Reset the dialog
+        document.getElementById('exportingStatus').style.display = 'none';
+        document.getElementById('exportResult').style.display = 'none';
+        document.getElementById('confirmExportBtn').style.display = '';
+        
+        // Add click event to the confirm button
+        document.getElementById('confirmExportBtn').onclick = executeExport;
+        
+        // Show the overlay
+        document.getElementById('exportConfirmOverlay').style.display = 'flex';
+    }
+
+    // Close the export confirmation dialog
+    function closeExportConfirm() {
+        document.getElementById('exportConfirmOverlay').style.display = 'none';
+    }
+
+    // Execute the export operation
+    function executeExport() {
+        if (exportInProgress || selectedImages.size === 0) {
+            return;
+        }
+        
+        exportInProgress = true;
+        
+        // Show the loading spinner
+        document.getElementById('exportingStatus').style.display = 'block';
+        document.getElementById('confirmExportBtn').style.display = 'none';
+        
+        // Get CSRF token
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Prepare the data for the AJAX request
+        const selectedArray = Array.from(selectedImages.values());
+        const requestData = {
+            photos: selectedArray,
+            event_id: new URLSearchParams(window.location.search).get('event_id')
+        };
+        
+        // Make the AJAX request to export the selected photos
+        fetch('/export-selected-photos/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading spinner
+            document.getElementById('exportingStatus').style.display = 'none';
+            
+            // Show result
+            const resultElement = document.getElementById('exportResult');
+            resultElement.style.display = 'block';
+            
+            if (data.success) {
+                // Format success message
+                let resultHTML = `<div class="alert alert-success">${data.message}</div>`;
+                
+                // Add details if needed
+                if (data.exported && data.exported.length > 0) {
+                    resultHTML += `<div class="mt-3">
+                        <h6>Exported Images (${data.exported.length}):</h6>
+                        <ul class="list-group">
+                            ${data.exported.map(name => `<li class="list-group-item">${name}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                    
+                    // Store exported images in localStorage
+                    const exportedImages = JSON.parse(localStorage.getItem('exportedImages') || '[]');
+                    data.exported.forEach(name => {
+                        if (!exportedImages.includes(name)) {
+                            exportedImages.push(name);
+                        }
+                    });
+                    localStorage.setItem('exportedImages', JSON.stringify(exportedImages));
+                    
+                    // Add success badges to the exported images
+                    data.exported.forEach(name => {
+                        const checkbox = document.querySelector(`input[data-name="${name}"]`);
+                        if (checkbox) {
+                            const card = checkbox.closest('.card');
+                            if (card && !card.querySelector('.badge.bg-success')) {
+                                const exportedBadge = document.createElement('span');
+                                exportedBadge.className = 'position-absolute top-0 end-0 m-2 badge bg-success';
+                                exportedBadge.textContent = 'Exported';
+                                card.appendChild(exportedBadge);
+                            }
+                        }
+                    });
+                }
+                
+                if (data.skipped && data.skipped.length > 0) {
+                    resultHTML += `<div class="mt-3">
+                        <h6>Skipped (Already Exported) (${data.skipped.length}):</h6>
+                        <ul class="list-group">
+                            ${data.skipped.map(name => `<li class="list-group-item">${name}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+                
+                if (data.failed && data.failed.length > 0) {
+                    resultHTML += `<div class="mt-3">
+                        <h6 class="text-danger">Failed to Export (${data.failed.length}):</h6>
+                        <ul class="list-group">
+                            ${data.failed.map(name => `<li class="list-group-item">${name}</li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+                
+                resultElement.innerHTML = resultHTML;
+            } else {
+                // Show error message
+                resultElement.innerHTML = `<div class="alert alert-danger">Export failed: ${data.message}</div>`;
+            }
+            
+            // Change confirmation button to close
+            const confirmBtn = document.getElementById('confirmExportBtn');
+            confirmBtn.style.display = '';
+            confirmBtn.textContent = 'Close';
+            confirmBtn.onclick = closeExportConfirm;
+            
+            // Clear selections after successful export
+            if (data.success) {
+                selectedImages.clear();
+                const checkboxes = document.querySelectorAll('#matchingImagesContainer .image-checkbox input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                });
+                updateSelectedCount();
+            }
+            
+            exportInProgress = false;
+        })
+        .catch(error => {
+            console.error('Export error:', error);
+            
+            // Hide loading spinner
+            document.getElementById('exportingStatus').style.display = 'none';
+            
+            // Show error message
+            const resultElement = document.getElementById('exportResult');
+            resultElement.style.display = 'block';
+            resultElement.innerHTML = `<div class="alert alert-danger">Error during export: ${error.message || 'Unknown error'}</div>`;
+            
+            // Change confirmation button to close
+            const confirmBtn = document.getElementById('confirmExportBtn');
+            confirmBtn.style.display = '';
+            confirmBtn.textContent = 'Close';
+            confirmBtn.onclick = closeExportConfirm;
+            
+            exportInProgress = false;
+        });
+    }
+</script>
+
+<script>
+    // Modify the existing showMatchingImages function to add checkboxes after images are loaded
+    const originalShowMatchingImages = showMatchingImages;
+    showMatchingImages = function(face_id) {
+        originalShowMatchingImages(face_id);
+        
+        // Add a short delay to ensure images are loaded
+        setTimeout(() => {
+            addCheckboxesToMatchingImages();
+        }, 500);
+    };
+
+    // Initialize export functionality on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize localStorage for exported images if it doesn't exist
+        if (!localStorage.getItem('exportedImages')) {
+            localStorage.setItem('exportedImages', JSON.stringify([]));
+        }
+    });
+</script>
+
+{% endblock %}

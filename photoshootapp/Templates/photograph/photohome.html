@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <!-- Basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">   
+   
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ 
+     <!-- Site Metas -->
+    <title>PhotoShoot - Photographer</title>  
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Site Icons -->
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="/static/style.css">    
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/custom.css">
+	<script src="/static/js/modernizr.js"></script> <!-- Modernizr -->
+	
+	<!-- PrettyPhoto for gallery lightbox -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettyPhoto/3.1.6/css/prettyPhoto.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettyPhoto/3.1.6/js/jquery.prettyPhoto.min.js"></script>
+    
+    <!-- Isotope JS for gallery filtering -->
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
+    <!-- WOW.js for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f8f9fa;
+            --border-color: #e1e1e1;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --header-bg: #ffffff;
+            --footer-bg: #f8f9fa;
+            --gallery-hover: rgba(52, 152, 219, 0.8);
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #2980b9;
+            --secondary-color: #27ae60;
+            --background-color: #121212;
+            --text-color: #f1f1f1;
+            --card-bg: #1e1e1e;
+            --border-color: #333333;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --header-bg: #1a1a1a;
+            --footer-bg: #1a1a1a;
+            --gallery-hover: rgba(41, 128, 185, 0.8);
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        .header {
+            background-color: var(--header-bg) !important;
+            transition: background-color var(--transition-speed);
+        }
+
+        .navbar-light .navbar-nav .nav-link {
+            color: var(--text-color);
+            transition: color var(--transition-speed);
+        }
+
+        .section {
+            background-color: var(--background-color);
+            transition: background-color var(--transition-speed);
+        }
+
+        .lb {
+            background-color: var(--card-bg);
+            transition: background-color var(--transition-speed);
+        }
+
+        .card, .service-box {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 26px;
+            position: relative;
+            width: 50px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+
+        .slider:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 18px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 18px;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        .light-icon, .dark-icon {
+            position: absolute;
+            top: 5px;
+            font-size: 14px;
+            transition: opacity 0.3s ease;
+        }
+
+        .light-icon {
+            left: 6px;
+            color: #f39c12;
+            opacity: 1;
+        }
+
+        .dark-icon {
+            right: 6px;
+            color: #f1c40f;
+            opacity: 0;
+        }
+
+        input:checked + .slider .light-icon {
+            opacity: 0;
+        }
+
+        input:checked + .slider .dark-icon {
+            opacity: 1;
+        }
+
+        /* Profile Button */
+        .profile-link {
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.1);
+        }
+
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transition: background-color var(--transition-speed), border-color var(--transition-speed);
+        }
+
+        .dropdown-item {
+            color: var(--text-color);
+            transition: color var(--transition-speed), background-color var(--transition-speed);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Gallery Animations */
+        .gallery-single {
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gallery-single:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--shadow-color);
+        }
+
+        .gallery-single img {
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-single:hover img {
+            transform: scale(1.05);
+        }
+
+        .box-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--gallery-hover);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .gallery-single:hover .box-content {
+            opacity: 1;
+        }
+
+        .inner-content {
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-single:hover .inner-content {
+            transform: translateY(0);
+        }
+
+        .icon {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .gallery-single:hover .icon {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .icon li {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .icon li a {
+            display: block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--primary-color);
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+        }
+
+        .icon li a:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Button Animations */
+        .filter-button-group button {
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+        }
+
+        .filter-button-group button:hover {
+            transform: translateY(-2px);
+        }
+
+        .filter-button-group button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<style>
+    :root {
+        --primary-color: #3498db;
+        --secondary-color: #2ecc71;
+        --accent-color: #e74c3c;
+        --text-color: #333;
+        --light-text: #f8f9fa;
+        --dark-bg: #222;
+        --light-bg: #fff;
+        --border-color: #ddd;
+        --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+    
+    [data-theme="dark"] {
+        --primary-color: #4fa3d1;
+        --secondary-color: #3ebd7e;
+        --accent-color: #e8675d;
+        --text-color: #f8f9fa;
+        --light-text: #f8f9fa;
+        --dark-bg: #121212;
+        --light-bg: #1e1e1e;
+        --border-color: #444;
+        --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    body {
+        background-color: var(--light-bg);
+        color: var(--text-color);
+        transition: var(--transition);
+    }
+    
+    [data-theme="dark"] .navbar {
+        background-color: var(--dark-bg) !important;
+    }
+    
+    [data-theme="dark"] .navbar-light .navbar-nav .nav-link {
+        color: var(--light-text) !important;
+    }
+    
+    [data-theme="dark"] .section.lb {
+        background-color: var(--dark-bg);
+    }
+    
+    [data-theme="dark"] .section-title h3,
+    [data-theme="dark"] .section-title p {
+        color: var(--light-text);
+    }
+    
+    [data-theme="dark"] .gallery-single {
+        background-color: var(--dark-bg);
+        border: 1px solid var(--border-color);
+    }
+    
+    [data-theme="dark"] .box-content {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+    
+    [data-theme="dark"] .services-inner-box {
+        background-color: var(--dark-bg);
+        border: 1px solid var(--border-color);
+    }
+    
+    [data-theme="dark"] .services-inner-box h2 {
+        color: var(--light-text);
+    }
+    
+    [data-theme="dark"] .filter-button-group button {
+        background-color: var(--dark-bg);
+        color: var(--light-text);
+        border: 1px solid var(--border-color);
+    }
+    
+    [data-theme="dark"] .filter-button-group button.active {
+        background-color: var(--primary-color);
+    }
+    
+    .header {
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        transition: var(--transition);
+    }
+    
+    [data-theme="dark"] .header {
+        background-color: var(--dark-bg);
+    }
+    
+    .navbar-light .navbar-nav .nav-link {
+        color: var(--text-color);
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    
+    .navbar-light .navbar-nav .nav-link:hover {
+        color: var(--primary-color);
+    }
+    
+    .user-welcome {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
+    }
+    
+    .welcome-text {
+        font-size: 14px;
+        margin: 0;
+        margin-right: 10px;
+    }
+    
+    .highlight-name {
+        color: #2196F3;
+        font-weight: bold;
+    }
+    
+    .profile-image-container {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+    
+    .profile-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .dark-mode-toggle {
+        display: inline-block;
+        margin-left: 10px;
+    }
+    
+    .ui-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+        margin-top: 8px;
+        margin-left: 10px;
+    }
+    
+    .ui-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5px;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+        z-index: 2;
+    }
+    
+    .slider:after {
+        content: '🌙';
+        font-size: 12px;
+        position: absolute;
+        right: 7px;
+    }
+    
+    input:checked + .slider {
+        background-color: var(--primary-color);
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    input:checked + .slider:after {
+        content: '☀️';
+        left: 7px;
+        right: auto;
+    }
+	li{
+		padding:4px;
+	}
+</style>
+
+{% for m in messages %}
+<script>
+    alert("{{m}}")
+</script>
+{% endfor %}
+
+<body id="page-top" class="politics_version">
+
+    <!-- LOADER -->
+    <div id="preloader">
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+    </div><!-- end loader -->
+    <!-- END LOADER -->
+	
+<header class="header header_style_01">
+        <nav class="navbar header-nav navbar-expand-lg">
+            <div class="container">
+				<a class="navbar-brand" href="/photohome"><img src="/static/images/logo.png" alt="image"></a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarApp" aria-controls="navbarApp" aria-expanded="false" aria-label="Toggle navigation">
+					<span></span>
+					<span></span>
+					<span></span>
+				</button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarApp">
+                    <ul class="navbar-nav">
+                        <li><a class="nav-link active" href="/photohome">Home</a></li>
+                        <li><a class="nav-link" href="/viewrequestuser">ViewRequest</a></li>
+                        <li><a class="nav-link" href="/viewevent">Viewevents</a></li>
+                        <li><a class="nav-link" href="/addphoto">Add Images</a></li>
+                        <li><a class="nav-link" href="/myphoto">Gallery</a></li>
+                        <li><a class="nav-link" href="/">Logout</a></li>
+                        <li class="ml-3">
+                            <!-- Dark Mode Toggle -->
+                            <div class="theme-switch-wrapper">
+                                <label class="theme-switch" for="darkModeToggle">
+                                    <input type="checkbox" id="darkModeToggle" />
+                                    <div class="slider round">
+                                        <i class="fas fa-sun light-icon"></i>
+                                        <i class="fas fa-moon dark-icon"></i>
+                                    </div>
+                                </label>
+                            </div>
+                        </li>
+                       
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+	
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+      <div class="container-fluid">
+        <a class="navbar-brand js-scroll-trigger" href="/photohome">
+			<img class="img-fluid" src="/static/images/logo.png" alt="logo" />
+		</a>
+      </div>
+    </nav>
+	
+	<div class="demo-2">
+		<div class="page-view">
+			<div class="project">
+				<div class="text">
+					<h1>SKYLINE</h1>
+					<p>Photo by James Traf</p>
+				</div>
+			</div>
+			<div class="project">
+				<div class="text">
+					<h1>Architecture</h1>
+					<p>Photo by Steve Richey</p>
+				</div>
+			</div>
+			<div class="project">
+				<div class="text">
+					<h1>Shadows</h1>
+					<p>Photo by Samuel Zeller</p>
+				</div>
+			</div>
+			<div class="project">
+				<div class="text">
+					<h1>Perspective</h1>
+					<p>Photo by Padurariu Alexandru</p>
+				</div>
+			</div>
+			<nav class="arrows">
+				<div class="arrow previous">
+					<svg viewBox="208.3 352 4.2 6.4">
+						<polygon class="st0" points="212.1,357.3 211.5,358 208.7,355.1 211.5,352.3 212.1,353 209.9,355.1"/>
+					</svg>
+				</div>
+				<div class="arrow next">
+					<svg viewBox="208.3 352 4.2 6.4">
+						<polygon class="st0" points="212.1,357.3 211.5,358 208.7,355.1 211.5,352.3 212.1,353 209.9,355.1"/>
+					</svg>
+				</div>
+			</nav>
+		</div>
+	</div>
+	
+    
+	
+    <div id="services" class="section lb">
+        <div class="container">
+            <div class="section-title text-center">
+                <h3>Services</h3>
+                <p>Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus.</p>
+            </div><!-- end title -->
+
+            <div class="row">
+				<div class="col-md-4">
+					<div class="effect-new">
+						<div class="services-inner-box">
+							<div class="ser-icon">
+								<i class="flaticon-wedding-photo"></i>
+							</div>
+							<h2>Wedding Photography</h2>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+                </div><!-- end col -->
+                <div class="col-md-4">
+					<div class="effect-new">
+						<div class="services-inner-box">
+							<div class="ser-icon">
+								<i class="flaticon-image"></i>
+							</div>
+							<h2>Portrait photography</h2>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+                </div><!-- end col -->
+				<div class="col-md-4">
+					<div class="effect-new">
+						<div class="services-inner-box">
+							<div class="ser-icon">
+								<i class="flaticon-event"></i>
+							</div>
+							<h2>Event Photography</h2>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+                </div><!-- end col -->
+            </div><!-- end row -->
+        </div><!-- end container -->
+    </div><!-- end section -->
+	
+	 <div id="reviews" class="section wb parallaxie" style="background: url(./static/uploads/reviews-bg.jpg)">
+        <div class="container">
+            <div class="section-title text-center">
+                <h3>Reviews</h3>
+                <p>We thanks for all our awesome testimonials! There are hundreds of our happy customers! </p>
+            </div><!-- end title -->
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12">
+                    <div class="testi-carousel owl-carousel owl-theme">
+                        <div class="testimonial clearfix">
+							<figure class="testimonial_img">
+								<img src="/static/uploads/testi_01.jpg" alt="" class="img-fluid">
+							</figure>
+                            <div class="desc">
+                                <h3><i class="fa fa-quote-left"></i> Wonderful Support!</h3>
+                                <p>They have got my project on time with the competition with a sed highly skilled, and experienced & professional team.</p>
+                            </div>
+                            <div class="testi-meta">
+                                <h4>James Fernando </h4>
+                            </div>
+                            <!-- end testi-meta -->
+                        </div>
+                        <!-- end testimonial -->
+
+                        <div class="testimonial clearfix">
+							<figure class="testimonial_img">
+								<img src="/static/uploads/testi_02.jpg" alt="" class="img-fluid">
+							</figure>
+                            <div class="desc">
+                                <h3><i class="fa fa-quote-left"></i> Awesome Services!</h3>
+                                <p>Explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you completed.</p>
+                            </div>
+                            <div class="testi-meta">
+                                <h4>Jacques Philips </h4>
+                            </div>
+                            <!-- end testi-meta -->
+                        </div>
+                        <!-- end testimonial -->
+
+                        <div class="testimonial clearfix">
+							<figure class="testimonial_img">
+								<img src="/static/uploads/testi_03.jpg" alt="" class="img-fluid">
+							</figure>
+                            <div class="desc">
+                                <h3><i class="fa fa-quote-left"></i> Great & Talented Team!</h3>
+                                <p>The master-builder of human happines no one rejects, dislikes avoids pleasure itself, because it is very pursue pleasure. </p>
+                            </div>
+                            <div class="testi-meta">
+                                <h4>Venanda Mercy </h4>
+                            </div>
+                            <!-- end testi-meta -->
+                        </div>
+                        <!-- end testimonial -->
+                        <div class="testimonial clearfix">
+							<figure class="testimonial_img">
+								<img src="/static/uploads/testi_01.jpg" alt="" class="img-fluid">
+							</figure>
+                            <div class="desc">
+                                <h3><i class="fa fa-quote-left"></i> Wonderful Support!</h3>
+                                <p>They have got my project on time with the competition with a sed highly skilled, and experienced & professional team.</p>
+                            </div>
+                            <div class="testi-meta">
+                                <h4>James Fernando </h4>
+                            </div>
+                            <!-- end testi-meta -->
+                        </div>
+                        <!-- end testimonial -->
+
+                        <div class="testimonial clearfix">
+							<figure class="testimonial_img">
+								<img src="/static/uploads/testi_02.jpg" alt="" class="img-fluid">
+							</figure>
+                            <div class="desc">
+                                <h3><i class="fa fa-quote-left"></i> Awesome Services!</h3>
+                                <p>Explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you completed.</p>
+                            </div>
+                            <div class="testi-meta">
+                                <h4>Jacques Philips </h4>
+                            </div>
+                            <!-- end testi-meta -->
+                        </div>
+                        <!-- end testimonial -->
+
+                        <div class="testimonial clearfix">
+							<figure class="testimonial_img">
+								<img src="/static/uploads/testi_03.jpg" alt="" class="img-fluid">
+							</figure>
+                            <div class="desc">
+                                <h3><i class="fa fa-quote-left"></i> Great & Talented Team!</h3>
+                                <p>The master-builder of human happines no one rejects, dislikes avoids pleasure itself, because it is very pursue pleasure. </p>
+                            </div>
+                            <div class="testi-meta">
+                                <h4>Venanda Mercy </h4>
+                            </div>
+                            <!-- end testi-meta -->
+                        </div><!-- end testimonial -->
+                    </div><!-- end carousel -->
+                </div><!-- end col -->
+            </div><!-- end row -->
+        </div><!-- end container -->
+    </div><!-- end section -->
+    <a href="#" id="scroll-to-top" class="dmtop global-radius"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a>
+
+    <!-- ALL JS FILES -->
+    <script src="/static/js/all.js"></script>
+	<!-- Camera Slider -->
+	<script src="/static/js/jquery.mobile.customized.min.js"></script>
+	<script src="/static/js/jquery.easing.1.3.js"></script> 
+	<script src="/static/js/parallaxie.js"></script>
+	<script src="/static/js/jquery.appear.min.js"></script>
+	<script src="/static/js/skill.bars.jquery.js"></script>
+	<script src="/static/js/responsiveslides.min.js"></script>
+	<!-- Contact form JavaScript -->
+    <script src="/static/js/jqBootstrapValidation.js"></script>
+    <script src="/static/js/contact_me.js"></script>
+    <!-- ALL PLUGINS -->
+	<script src="/static/js/jquery.fatNav.min.js"></script>
+	<script src="/static/js/menu-overlay.js"></script>
+    <script src="/static/js/custom.js"></script>
+	<script src="/static/js/zepto.min.js"></script>
+	<script src="/static/js/imagesloaded.pkgd.min.js"></script>
+	<script src="/static/js/slider.js"></script>
+	
+	<!-- Custom JavaScript for Dark Mode and Animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize WOW.js for animations
+            new WOW().init();
+            
+            // Dark mode toggle functionality
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            // Check for saved theme preference or use OS preference
+            const savedTheme = localStorage.getItem('theme');
+            
+            if (savedTheme === 'dark') {
+                body.setAttribute('data-theme', 'dark');
+                darkModeToggle.checked = true;
+            } else if (savedTheme === 'light') {
+                body.setAttribute('data-theme', 'light');
+                darkModeToggle.checked = false;
+            } else {
+                // If no saved preference, use OS preference
+                if (prefersDarkScheme.matches) {
+                    body.setAttribute('data-theme', 'dark');
+                    darkModeToggle.checked = true;
+                }
+            }
+            
+            // Toggle dark mode on checkbox change
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    body.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // Initialize PrettyPhoto for gallery lightbox
+            if (typeof jQuery !== 'undefined' && jQuery.isFunction(jQuery.fn.prettyPhoto)) {
+                jQuery("a[data-rel^='prettyPhoto']").prettyPhoto({
+                    theme: 'dark_square',
+                    social_tools: false,
+                    deeplinking: false,
+                    show_title: true,
+                    allow_resize: true
+                });
+            }
+            
+            // Initialize Isotope for gallery filtering
+            if (typeof Isotope !== 'undefined') {
+                const grid = document.querySelector('.gallery-list');
+                if (grid) {
+                    const iso = new Isotope(grid, {
+                        itemSelector: '.gallery-grid',
+                        layoutMode: 'fitRows'
+                    });
+                    
+                    // Filter items on button click
+                    const filterButtonGroup = document.querySelector('.filter-button-group');
+                    if (filterButtonGroup) {
+                        filterButtonGroup.addEventListener('click', function(event) {
+                            if (!event.target.matches('button')) return;
+                            
+                            const filterValue = event.target.getAttribute('data-filter');
+                            iso.arrange({ filter: filterValue });
+                            
+                            // Update active button
+                            const buttons = this.querySelectorAll('button');
+                            buttons.forEach(btn => btn.classList.remove('active'));
+                            event.target.classList.add('active');
+                        });
+                    }
+                }
+            }
+            
+            // Smooth scroll for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') === '#') return;
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        e.preventDefault();
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 70,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

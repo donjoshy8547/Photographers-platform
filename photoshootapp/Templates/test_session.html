@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .card {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .info {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+        }
+        .value {
+            display: inline-block;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            display: inline-block;
+            background: #3498db;
+            color: #fff;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Session Test Page</h1>
+    
+    <div class="card">
+        <h2>Session Information</h2>
+        
+        {% if session_data.is_logged_in %}
+            <div class="info">
+                <span class="label">Login Status:</span>
+                <span class="value">Logged In</span>
+            </div>
+            <div class="info">
+                <span class="label">Photographer ID:</span>
+                <span class="value">{{ session_data.pid }}</span>
+            </div>
+            {% if session_data.photographer_name %}
+                <div class="info">
+                    <span class="label">Name:</span>
+                    <span class="value">{{ session_data.photographer_name }}</span>
+                </div>
+                <div class="info">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ session_data.photographer_email }}</span>
+                </div>
+            {% endif %}
+            
+            {% if session_data.error %}
+                <div class="info error">
+                    <span class="label">Error:</span>
+                    <span class="value">{{ session_data.error }}</span>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="info">
+                <span class="label">Login Status:</span>
+                <span class="value">Not Logged In</span>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="buttons">
+        <a href="/photographerlogin" class="btn">Go to Login</a>
+        <a href="/photohome" class="btn">Go to Home</a>
+        <a href="/photoprofile" class="btn">Go to Profile</a>
+    </div>
+</body>
+</html>

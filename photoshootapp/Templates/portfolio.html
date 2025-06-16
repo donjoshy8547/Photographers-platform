@@ -1,0 +1,526 @@
+{% extends "photograph/common_base.html" %}
+
+{% block content %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+      <div class="container-fluid">
+        <a class="navbar-brand js-scroll-trigger" href="index.html">
+			<img class="img-fluid" src="images/logo.png" alt="" />
+		</a>
+      </div>
+    </nav>
+	
+	<div class="banner-area banner-bg-1">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="banner animate__animated animate__fadeIn">
+						<h2 class="text-focus-in">Portfolio</h2>
+						<ul class="page-title-link slide-in-right">
+							<li><a href="/">Home</a></li>
+							<li><a href="#">Gallery</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+    <div id="gallery" class="section lb">
+		<div class="container">
+			<div class="section-title text-center">
+				<h3 class="animate__animated animate__bounceIn">Gallery</h3>
+				<p class="section-subtitle fade-in">Explore our stunning collection of professional photography</p>
+			</div><!-- end title -->
+		
+			<div class="gallery-menu text-center row">
+				<div class="col-md-12">
+					<div class="button-group filter-button-group">
+						<button class="active filter-btn" data-filter="*">All</button>
+						{% regroup images by category as grouped_images %}
+						{% for group in grouped_images %}
+							<button class="filter-btn" data-filter=".photo_{{ forloop.counter }}"> {{ group.grouper }} </button>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			
+			<div class="gallery-list row">
+				{% for group in grouped_images %}
+					{% for image in group.list %}
+						<div class="col-md-4 col-sm-6 gallery-grid photo_{{ forloop.parentloop.counter }} animate__animated animate__fadeIn">
+							<div class="gallery-single fix">
+								<img src="{{ image.image.url }}" class="img-fluid" alt="Photo by {{ image.photographer.name }}">
+								<div class="box-content">
+									<div class="inner-content">
+										<h3 class="title">{{ group.grouper }}</h3>
+										<span class="post">By {{ image.photographer.name }}</span>
+									</div>
+									<ul class="icon">
+										<li><a href="{{ image.image.url }}" data-rel="prettyPhoto[gal]" class="image-popup"><i class="fa fa-search"></i></a></li>
+										<li><a href="#" class="image-link"><i class="fa fa-link"></i></a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				{% endfor %}
+			</div>
+			
+		</div>
+	</div>
+
+	<!-- Custom CSS for Portfolio Page -->
+	<style>
+		/* Animation Keyframes */
+		@keyframes fadeIn {
+			from { opacity: 0; }
+			to { opacity: 1; }
+		}
+		
+		@keyframes slideInRight {
+			from { transform: translateX(50px); opacity: 0; }
+			to { transform: translateX(0); opacity: 1; }
+		}
+		
+		@keyframes textFocusIn {
+			0% {
+				filter: blur(12px);
+				opacity: 0;
+			}
+			100% {
+				filter: blur(0px);
+				opacity: 1;
+			}
+		}
+		
+		@keyframes floatAnimation {
+			0% { transform: translateY(0px); }
+			50% { transform: translateY(-10px); }
+			100% { transform: translateY(0px); }
+		}
+		
+		@keyframes pulseGlow {
+			0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+			70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+			100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+		}
+		
+		/* Applied Animations */
+		.fade-in {
+			animation: fadeIn 1.5s ease forwards;
+		}
+		
+		.slide-in-right {
+			animation: slideInRight 1s ease forwards;
+		}
+		
+		.text-focus-in {
+			animation: textFocusIn 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) forwards;
+		}
+		
+		.float-animation {
+			animation: floatAnimation 3s ease-in-out infinite;
+		}
+		
+		/* Banner Styling */
+		.banner-area {
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.banner-area::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			z-index: 1;
+		}
+		
+		.banner {
+			position: relative;
+			z-index: 2;
+			padding: 80px 0;
+		}
+		
+		.banner h2 {
+			font-size: 48px;
+			font-weight: 700;
+			margin-bottom: 20px;
+			color: #fff;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+		}
+		
+		.page-title-link {
+			display: flex;
+			justify-content: center;
+			gap: 15px;
+			list-style: none;
+			padding: 0;
+		}
+		
+		.page-title-link li {
+			position: relative;
+		}
+		
+		.page-title-link li:not(:last-child)::after {
+			content: '/';
+			position: absolute;
+			right: -10px;
+			color: rgba(255, 255, 255, 0.7);
+		}
+		
+		.page-title-link li a {
+			color: #fff;
+			font-size: 18px;
+			transition: all 0.3s ease;
+			text-decoration: none;
+		}
+		
+		.page-title-link li a:hover {
+			color: #007bff;
+		}
+		
+		/* Gallery Section Styling */
+		.section-title h3 {
+			font-size: 36px;
+			font-weight: 700;
+			margin-bottom: 15px;
+			position: relative;
+			display: inline-block;
+		}
+		
+		.section-title h3::after {
+			content: '';
+			position: absolute;
+			bottom: -10px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 50px;
+			height: 3px;
+			background: #007bff;
+			transition: width 0.5s ease;
+		}
+		
+		.section-title:hover h3::after {
+			width: 100px;
+		}
+		
+		.section-subtitle {
+			font-size: 18px;
+			color: #666;
+			max-width: 700px;
+			margin: 0 auto 40px;
+		}
+		
+		/* Filter Buttons */
+		.filter-button-group {
+			margin-bottom: 40px;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 10px;
+		}
+		
+		.filter-btn {
+			padding: 10px 20px;
+			border: none;
+			background: #f8f9fa;
+			color: #333;
+			border-radius: 30px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.filter-btn::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+			transition: all 0.5s ease;
+		}
+		
+		.filter-btn:hover::before {
+			left: 100%;
+		}
+		
+		.filter-btn:hover, .filter-btn.active {
+			background: #007bff;
+			color: white;
+			transform: translateY(-3px);
+			box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+		}
+		
+		/* Gallery Grid */
+		.gallery-grid {
+			margin-bottom: 30px;
+			transition: all 0.5s ease;
+		}
+		
+		.gallery-single {
+			position: relative;
+			overflow: hidden;
+			border-radius: 10px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+			transition: all 0.5s ease;
+		}
+		
+		.gallery-single:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+		}
+		
+		.gallery-single img {
+			transition: all 0.8s ease;
+			border-radius: 10px;
+		}
+		
+		.gallery-single:hover img {
+			transform: scale(1.1);
+		}
+		
+		.box-content {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.7);
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			opacity: 0;
+			transition: all 0.5s ease;
+			border-radius: 10px;
+		}
+		
+		.gallery-single:hover .box-content {
+			opacity: 1;
+		}
+		
+		.inner-content {
+			text-align: center;
+			transform: translateY(20px);
+			transition: all 0.5s ease;
+		}
+		
+		.gallery-single:hover .inner-content {
+			transform: translateY(0);
+		}
+		
+		.inner-content .title {
+			color: white;
+			font-size: 22px;
+			font-weight: 600;
+			margin-bottom: 5px;
+		}
+		
+		.inner-content .post {
+			color: rgba(255, 255, 255, 0.8);
+			font-size: 14px;
+		}
+		
+		.icon {
+			list-style: none;
+			padding: 0;
+			margin: 20px 0 0;
+			display: flex;
+			gap: 15px;
+			transform: translateY(20px);
+			opacity: 0;
+			transition: all 0.5s ease 0.2s;
+		}
+		
+		.gallery-single:hover .icon {
+			transform: translateY(0);
+			opacity: 1;
+		}
+		
+		.icon li a {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 40px;
+			height: 40px;
+			background: white;
+			border-radius: 50%;
+			color: #007bff;
+			font-size: 16px;
+			transition: all 0.3s ease;
+		}
+		
+		.icon li a:hover {
+			background: #007bff;
+			color: white;
+			transform: scale(1.1);
+			animation: pulseGlow 1.5s infinite;
+		}
+		
+		/* Isotope Animation */
+		.gallery-grid.animate__fadeIn {
+			animation-duration: 0.8s;
+		}
+		
+		/* Responsive Adjustments */
+		@media (max-width: 767px) {
+			.banner h2 {
+				font-size: 36px;
+			}
+			
+			.filter-button-group {
+				gap: 5px;
+			}
+			
+			.filter-btn {
+				padding: 8px 15px;
+				font-size: 14px;
+			}
+		}
+	</style>
+
+	<!-- Add Animate.css Library -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+	
+	<!-- Custom JS for Isotope Animation -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Initialize Isotope with stagger effect
+			var grid = document.querySelector('.gallery-list');
+			var iso = new Isotope(grid, {
+				itemSelector: '.gallery-grid',
+				percentPosition: true,
+				stagger: 30,
+				transitionDuration: '0.6s',
+				layoutMode: 'fitRows'
+			});
+			
+			// Filter items on button click
+			var filterBtns = document.querySelectorAll('.filter-btn');
+			filterBtns.forEach(function(btn) {
+				btn.addEventListener('click', function() {
+					var filterValue = this.getAttribute('data-filter');
+					
+					// Add active class to current button
+					filterBtns.forEach(function(el) {
+						el.classList.remove('active');
+					});
+					this.classList.add('active');
+					
+					// Apply filter with animation
+					var items = document.querySelectorAll('.gallery-grid');
+					if (filterValue === '*') {
+						items.forEach(function(item) {
+							item.classList.add('animate__animated', 'animate__fadeIn');
+							setTimeout(function() {
+								item.style.display = 'block';
+							}, 100);
+						});
+					} else {
+						items.forEach(function(item) {
+							if (item.classList.contains(filterValue.substring(1))) {
+								item.classList.add('animate__animated', 'animate__fadeIn');
+								setTimeout(function() {
+									item.style.display = 'block';
+								}, 100);
+							} else {
+								item.classList.add('animate__animated', 'animate__fadeOut');
+								setTimeout(function() {
+									item.style.display = 'none';
+								}, 500);
+							}
+						});
+					}
+					
+					// Re-layout Isotope after filtering
+					setTimeout(function() {
+						iso.arrange({
+							filter: filterValue
+						});
+					}, 100);
+				});
+			});
+			
+			// Initialize lightbox for image popups
+			var popupLinks = document.querySelectorAll('.image-popup');
+			popupLinks.forEach(function(link) {
+				link.addEventListener('click', function(e) {
+					e.preventDefault();
+					var imgSrc = this.getAttribute('href');
+					var lightbox = document.createElement('div');
+					lightbox.className = 'lightbox animate__animated animate__fadeIn';
+					lightbox.innerHTML = `
+						<div class="lightbox-content">
+							<span class="close-lightbox">&times;</span>
+							<img src="${imgSrc}" alt="Lightbox Image">
+						</div>
+					`;
+					document.body.appendChild(lightbox);
+					
+					// Close lightbox on click
+					lightbox.addEventListener('click', function() {
+						lightbox.classList.add('animate__fadeOut');
+						setTimeout(function() {
+							document.body.removeChild(lightbox);
+						}, 500);
+					});
+				});
+			});
+		});
+	</script>
+	
+	<!-- Lightbox Styles -->
+	<style>
+		.lightbox {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.9);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 9999;
+		}
+		
+		.lightbox-content {
+			position: relative;
+			max-width: 90%;
+			max-height: 90%;
+		}
+		
+		.lightbox-content img {
+			max-width: 100%;
+			max-height: 90vh;
+			border-radius: 5px;
+			box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+		}
+		
+		.close-lightbox {
+			position: absolute;
+			top: -40px;
+			right: 0;
+			color: white;
+			font-size: 30px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.close-lightbox:hover {
+			color: #007bff;
+			transform: scale(1.2);
+		}
+	</style>
+
+{% endblock %}

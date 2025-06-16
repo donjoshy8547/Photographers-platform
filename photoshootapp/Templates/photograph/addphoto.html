@@ -1,0 +1,364 @@
+{% extends "photograph/common_base.html" %}
+
+{% block content %}
+<br>
+<br>
+<br>
+    <div id="contact" class="section lb">
+        <div class="container" style="margin-top: -34px;">
+            <div class="section-title text-center wow fadeInDown" data-wow-delay="0.2s">
+                <h3>ADD GALLERY</h3>
+                <div class="title-underline wow fadeInUp" data-wow-delay="0.4s" style="width: 80px; height: 3px; background: linear-gradient(to right, #ff7a6b, #5e50ff); margin: 15px auto;"></div>
+                {% comment %} <p>Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus.</p> {% endcomment %}
+            </div><!-- end title -->
+
+            <div class="row">
+                <div class="col-md-8 offset-md-2">  <!-- Center the form in the middle of the page -->
+                    <div class="contact_form wow fadeIn" data-wow-delay="0.6s" style="padding: 90px 120px; box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-radius: 10px; background: #fff; transition: all 0.3s ease;">
+                        <div id="message"></div>
+                        <form method="POST" enctype="multipart/form-data" id="photoUploadForm">
+                            {% csrf_token %}
+                            <div class="form-group wow fadeInLeft" data-wow-delay="0.8s">
+                                <label for="category" class="animated-label">Event:</label>
+                                <select name="category" id="category" class="form-control form-input-animation" required>
+                                    <option value="" disabled selected>Select Event</option>
+                                    {% for ev in event %}
+                                    <option value="{{ev.id}}">{{ev.Event}}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-focus-border"></div>
+                            </div>
+                            <div class="form-group wow fadeInRight" data-wow-delay="1s">
+                                <label for="image" class="animated-label">Upload image:</label>
+                                <div class="custom-file-upload">
+                                    <input type="file" name="image" id="image" accept="image/*" multiple required class="input-file-hidden">
+                                    <div class="file-upload-wrapper">
+                                        <div class="file-upload-message">
+                                            <i class="fa fa-cloud-upload upload-icon pulse"></i>
+                                            <span>Drag & drop your images here or click to browse</span>
+                                        </div>
+                                        <div class="file-preview-container"></div>
+                                    </div>
+                                </div>
+                                <p class="help-block text-danger"></p>
+                            </div>
+
+                            <div class="text-left wow fadeInUp" data-wow-delay="1.2s">
+                                <button class="btn btn-primary btn-animated" type="submit">
+                                    <span class="btn-text">ADD</span>
+                                    <span class="btn-icon"><i class="fa fa-plus"></i></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div><!-- end col -->
+            </div><!-- end row -->
+        </div><!-- end container -->
+    </div><!-- end section -->
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="success-animation">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                    <h4 class="mt-4">Images uploaded successfully!</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Animated form elements */
+        .animated-label {
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-input-animation {
+            border: none;
+            border-bottom: 2px solid #ddd;
+            border-radius: 0;
+            padding: 10px 5px;
+            transition: all 0.3s ease;
+            background-color: transparent;
+        }
+        
+        .form-input-animation:focus {
+            border-bottom: 2px solid #5e50ff;
+            box-shadow: none;
+        }
+        
+        .form-focus-border {
+            position: relative;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, #ff7a6b, #5e50ff);
+            transition: width 0.4s ease;
+            margin-top: -2px;
+        }
+        
+        .form-input-animation:focus + .form-focus-border {
+            width: 100%;
+        }
+        
+        /* Custom file upload styling */
+        .custom-file-upload {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        
+        .input-file-hidden {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .file-upload-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
+            overflow: hidden;
+        }
+        
+        .file-upload-wrapper:hover {
+            border-color: #5e50ff;
+            background-color: rgba(94, 80, 255, 0.05);
+        }
+        
+        .file-upload-message {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #5e50ff;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .file-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .file-preview {
+            width: 80px;
+            height: 80px;
+            margin: 5px;
+            border-radius: 5px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .file-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Button animation */
+        .btn-animated {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 30px;
+            background: linear-gradient(45deg, #5e50ff, #ff7a6b);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(94, 80, 255, 0.3);
+        }
+        
+        .btn-animated:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(94, 80, 255, 0.4);
+        }
+        
+        .btn-text {
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-icon {
+            margin-left: 10px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-animated:hover .btn-icon {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Pulse animation */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* Success animation */
+        .success-animation {
+            margin: 20px auto;
+        }
+        
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #4bb71b;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #4bb71b;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #4bb71b;
+            fill: none;
+            animation: stroke .6s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+        
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) .8s forwards;
+        }
+        
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+        
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 30px #4bb71b;
+            }
+        }
+    </style>
+
+    <script>
+        // Initialize WOW.js
+        new WOW().init();
+        
+        // Custom file upload preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('image');
+            const filePreviewContainer = document.querySelector('.file-preview-container');
+            const fileUploadMessage = document.querySelector('.file-upload-message');
+            
+            fileInput.addEventListener('change', function() {
+                filePreviewContainer.innerHTML = '';
+                
+                if (this.files.length > 0) {
+                    filePreviewContainer.style.opacity = '1';
+                    fileUploadMessage.style.display = 'none';
+                    
+                    Array.from(this.files).forEach(file => {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const preview = document.createElement('div');
+                            preview.className = 'file-preview wow fadeInUp';
+                            preview.style.backgroundImage = `url(${e.target.result})`;
+                            filePreviewContainer.appendChild(preview);
+                            
+                            // Apply animation with delay
+                            preview.setAttribute('data-wow-delay', `${Math.random() * 0.5}s`);
+                            new WOW().init();
+                        }
+                        
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    filePreviewContainer.style.opacity = '0';
+                    fileUploadMessage.style.display = 'block';
+                }
+            });
+            
+            // Form submission animation
+            const form = document.getElementById('photoUploadForm');
+            form.addEventListener('submit', function(e) {
+                // Don't prevent default here as we want the form to submit normally
+                // This is just to show the animation
+                
+                // Show success modal after submission (for demo purposes)
+                // In a real implementation, you'd show this after successful AJAX submission
+                setTimeout(function() {
+                    $('#successModal').modal('show');
+                }, 1000);
+            });
+        });
+    </script>
+{% endblock %}

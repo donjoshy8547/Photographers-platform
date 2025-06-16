@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Processing Test{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">AI Processing Test</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Test with Image Upload</h4>
+                            <form id="imageUploadForm" enctype="multipart/form-data">
+                                <div class="form-group mb-3">
+                                    <label for="imageFile">Select Image</label>
+                                    <input type="file" class="form-control" id="imageFile" name="image" accept="image/*">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Process Image</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Test without Image (Test Mode)</h4>
+                            <form id="testModeForm">
+                                <div class="form-group mb-3">
+                                    <label for="testJobId">Job ID (optional)</label>
+                                    <input type="text" class="form-control" id="testJobId" placeholder="Leave empty for auto-generated ID">
+                                </div>
+                                <button type="submit" class="btn btn-success">Run Test Process</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h4>Process Photographer Images</h4>
+                            <form id="photographerForm">
+                                <div class="form-group mb-3">
+                                    <label for="photographerId">Photographer ID</label>
+                                    <input type="text" class="form-control" id="photographerId" placeholder="Enter photographer ID" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Process Photographer Images</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h4>Results</h4>
+                            <div class="card">
+                                <div class="card-body">
+                                    <pre id="resultsArea" class="bg-light p-3">No results yet</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <h4>Check Job Status</h4>
+                            <div class="input-group mb-3">
+                                <input type="text" id="jobIdInput" class="form-control" placeholder="Enter Job ID">
+                                <button class="btn btn-outline-secondary" type="button" id="checkStatusBtn">Check Status</button>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <pre id="statusArea" class="bg-light p-3">No status yet</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image upload form
+        document.getElementById('imageUploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = new FormData();
+            var imageFile = document.getElementById('imageFile').files[0];
+            
+            if (!imageFile) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            formData.append('image', imageFile);
+            
+            fetch('/process-ai/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server returned ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('resultsArea').textContent = JSON.stringify(data, null, 2);
+                if (data.job_id) {
+                    document.getElementById('jobIdInput').value = data.job_id;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('resultsArea').textContent = 'Error: ' + error;
+            });
+        });
+        
+        // Test mode form
+        document.getElementById('testModeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = new FormData();
+            formData.append('test_mode', 'true');
+            
+            var jobId = document.getElementById('testJobId').value;
+            if (jobId) {
+                formData.append('job_id', jobId);
+            }
+            
+            fetch('/process-ai/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server returned ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('resultsArea').textContent = JSON.stringify(data, null, 2);
+                if (data.job_id) {
+                    document.getElementById('jobIdInput').value = data.job_id;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('resultsArea').textContent = 'Error: ' + error;
+            });
+        });
+        
+        // Photographer form
+        document.getElementById('photographerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            var formData = new FormData();
+            var photographerId = document.getElementById('photographerId').value;
+            
+            if (!photographerId) {
+                alert('Please enter a photographer ID');
+                return;
+            }
+            
+            formData.append('photographer_id', photographerId);
+            
+            fetch('/process-ai/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server returned ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('resultsArea').textContent = JSON.stringify(data, null, 2);
+                if (data.job_id) {
+                    document.getElementById('jobIdInput').value = data.job_id;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('resultsArea').textContent = 'Error: ' + error;
+            });
+        });
+        
+        // Check status button
+        document.getElementById('checkStatusBtn').addEventListener('click', function() {
+            var jobId = document.getElementById('jobIdInput').value;
+            
+            if (!jobId) {
+                alert('Please enter a Job ID');
+                return;
+            }
+            
+            fetch('/check-ai-status/?job_id=' + encodeURIComponent(jobId))
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Server returned ${response.status}: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('statusArea').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('statusArea').textContent = 'Error: ' + error;
+            });
+        });
+    });
+</script>
+{% endblock %}

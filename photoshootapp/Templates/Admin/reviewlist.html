@@ -1,0 +1,65 @@
+{% extends "admin/common_base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Reviews</title>
+    <br>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <br>
+    <br>
+    <h3 style="text-align: center;">Product Reviews</h3>
+    <br>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Review ID</th>
+                <!-- <th>user</th> -->
+                <th>Product Name</th>
+                <th>Review</th>
+                <th>Rating</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in rrv %}
+            <tr>
+                <td>{{ review.id }}</td>
+                <!-- <td>{{ review.user.name }}</td> -->
+                <td>{{ review.product.name }}</td>
+                <td>{{ review.review_text }}</td>
+                <td>{{ review.rating }}</td>
+                <td>{{ review.review_date }}</td>
+                <td><a href="/deleteriv?id={{ review.id }}" class="btn btn-primary btn-sm">Delete</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No reviews found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+<br>
+<br>
+<br>
+{% endblock  %}

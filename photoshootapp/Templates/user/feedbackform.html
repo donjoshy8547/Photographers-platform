@@ -1,0 +1,42 @@
+{% extends "user/common_base.html" %}
+{% block content %}
+    <div class="banner-area banner-bg-1">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="banner">
+                        <h2>Feedback</h2>
+                        <ul class="page-title-link">
+                            <li><a href="/userhome">Home</a></li>
+                            <li><a href="/addfeedback">Feedback</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedback" class="section lb">
+        <div class="container">
+            <div class="section-title text-center">
+                <h3>Feedback Form</h3>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8" style="margin-left: 240px;">
+                    <div class="contact_form" style="padding: 90px 120px;">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="content">Your Feedback:</label>
+                                <textarea id="content" name="content" rows="5" cols="40" class="form-control" style="width: 100%;" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock  %}	

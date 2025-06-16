@@ -1,0 +1,317 @@
+{% extends "photograph/common_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    {% csrf_token %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'user_submit' %}">Events</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ event.Event }}</li>
+                </ol>
+            </nav>
+            <h2 class="text-center mb-4">
+                <i class="fas fa-images text-primary mr-2"></i> {{ event.Event }} Images
+            </h2>
+        </div>
+    </div>
+    
+    <!-- Event and Client Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt mr-2"></i> Event Details</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Event Name:</strong> {{ event.Event }}</p>
+                    <p><strong>Description:</strong> {{ event.Dis }}</p>
+                    <p><strong>Date:</strong> {{ event.date }}</p>
+                    <p><strong>Time:</strong> {{ event.time }}</p>
+                    <p><strong>Location:</strong> {{ event.location }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-user mr-2"></i> Client Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> {{ client.name }}</p>
+                    <p><strong>Email:</strong> {{ client.email }}</p>
+                    <p><strong>Phone:</strong> {{ client.phone }}</p>
+                    <p><strong>Address:</strong> {{ client.address }}</p>
+                    <p><strong>Location:</strong> {{ client.location }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if images %}
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-images mr-2"></i> Event Images</h5>
+                    <div>
+                        <a href="{% url 'user_submit' %}" class="btn btn-sm btn-light">
+                            <i class="fas fa-arrow-left mr-1"></i> Back to Events
+                        </a>
+                        <button id="submitToClientBtn" class="btn btn-sm btn-success ml-2">
+                            <i class="fas fa-paper-plane mr-1"></i> Submit to Client
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="image-gallery">
+                        {% for image in images %}
+                        <div class="col-md-3 mb-4">
+                            <div class="card h-100 shadow-sm image-card">
+                                <img src="{{ image.url }}" class="card-img-top gallery-image" alt="{{ image.name }}" 
+                                    data-toggle="modal" data-target="#imageModal" data-img="{{ image.url }}" 
+                                    data-title="{{ image.name }}">
+                                <div class="card-body">
+                                    <p class="card-text small text-truncate">{{ image.name }}</p>
+                                    <p class="card-text small text-muted">
+                                        <span class="badge {% if image.source == 'event_folder' %}badge-primary{% else %}badge-secondary{% endif %}">
+                                            {% if image.source == 'event_folder' %}Event{% else %}Selected{% endif %}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="card-footer bg-light">
+                                    <div class="btn-group btn-block">
+                                        <a href="{{ image.url }}" download="{{ image.name }}" class="btn btn-sm btn-success">
+                                            <i class="fas fa-download mr-1"></i> Download
+                                        </a>
+                                        <a href="{% url 'edit_image' event_id=event.id image_id=forloop.counter0 %}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit mr-1"></i> Edit
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle mr-2"></i> No images have been exported for this event yet.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" id="modalImage" class="img-fluid" alt="Modal Image">
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="downloadLink" class="btn btn-success">
+                    <i class="fas fa-download mr-2"></i> Download
+                </a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit Confirmation Modal -->
+<div class="modal fade" id="submitConfirmModal" tabindex="-1" role="dialog" aria-labelledby="submitConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="submitConfirmModalLabel">Confirm Submission</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to submit these images to the client?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button id="confirmSubmitBtn" type="button" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loadingModalLabel">Submitting...</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Submitting...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Submission Successful</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle mr-2"></i> The images have been successfully submitted to the client.
+                </div>
+                <p>The client can now download all submitted images as a zip file from their gallery page.</p>
+                <div class="text-center mt-3">
+                    <a id="directDownloadLink" href="#" class="btn btn-success btn-lg">
+                        <i class="fas fa-download mr-2"></i> Download ZIP File
+                    </a>
+                </div>
+                <p class="text-center mt-3">
+                    <i class="fas fa-info-circle mr-2"></i> Client should visit: <strong>Download Images</strong> page to access the zip file.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .gallery-image {
+        height: 200px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    
+    .gallery-image:hover {
+        transform: scale(1.05);
+    }
+    
+    .image-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .image-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Handle image modal
+        $('#imageModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var imgSrc = button.data('img');
+            var imgTitle = button.data('title');
+            
+            var modal = $(this);
+            modal.find('.modal-title').text(imgTitle);
+            modal.find('#modalImage').attr('src', imgSrc);
+            modal.find('#downloadLink').attr('href', imgSrc).attr('download', imgTitle);
+        });
+        
+        // Handle submit to client button
+        $('#submitToClientBtn').click(function() {
+            console.log("Submit button clicked");
+            // Show confirmation modal
+            $('#submitConfirmModal').modal('show');
+        });
+        
+        // Handle final submission
+        $('#confirmSubmitBtn').click(function() {
+            console.log("Confirm submit button clicked");
+            // Show loading
+            $('#submitConfirmModal').modal('hide');
+            $('#loadingModal').modal('show');
+            
+            // Get CSRF token
+            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+            
+            // Submit to server
+            $.ajax({
+                url: '{% url "submit_to_client" %}',
+                type: 'POST',
+                data: {
+                    'event_id': '{{ event.id }}',
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function(response) {
+                    console.log("Success response:", response);
+                    $('#loadingModal').modal('hide');
+                    if (response.success) {
+                        // Set the direct download link if available
+                        if (response.download_url) {
+                            $('#directDownloadLink').attr('href', response.download_url);
+                        } else {
+                            // Hide the button if no download URL is available
+                            $('#directDownloadLink').parent().hide();
+                        }
+                        $('#successModal').modal('show');
+                    } else {
+                        $('#errorMessage').text(response.message);
+                        $('#errorModal').modal('show');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error:", error);
+                    $('#loadingModal').modal('hide');
+                    $('#errorMessage').text('An error occurred during submission. Please try again.');
+                    $('#errorModal').modal('show');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

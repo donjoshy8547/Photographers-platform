@@ -1,0 +1,76 @@
+{% extends "admin/common_base.html" %}
+
+{% block content %}
+    <style>
+        /* Table Styles */
+        .table {
+            width: 100%; /* Full width */
+            border-collapse: collapse; /* Merge borders */
+            margin: 20px 0; /* Margin for spacing */
+            font-size: 18px; /* Font size */
+            text-align: left; /* Text alignment */
+        }
+
+        .table th, .table td {
+            padding: 12px; /* Padding inside cells */
+            border: 1px solid #ddd; /* Border color */
+        }
+
+
+        .table th {
+            background-color: #4CAF50; /* Header background color */
+            color: white; /* Header text color */
+        }
+
+        .table tr:nth-child(even) {
+            background-color: #f2f2f2; /* Alternate row color */
+        }
+
+        .table tr:hover {
+            background-color: #ddd; /* Hover effect */
+        }
+    </style>
+
+    <br>
+    <div class="container">
+        <h2> Order details</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>username</th>
+                    <th>Payment-Status</th>
+                    <th>Status</th>
+                    <th>phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in ordersli %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.product.name }}</td>
+                        <td>{{ order.name }}</td> 
+                        <td>{{ order.payment_status }}</td> 
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.phone }}</td>
+                        <td>
+                            {% if order.status == 'Pending' %}
+                                <a href="/shipped?id={{ order.id }}" class="btn btn-warning btn-sm">Mark as Shipped</a>
+                            {% elif order.status == 'Shipped' %}
+                                <a href="/delivered?id={{ order.id }}" class="btn btn-primary btn-sm">Mark as Delivered</a>
+                            {% elif order.status == 'Delivered' %}
+                                <span class="badge bg-success">Delivered</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+    <br>
+    <br>
+{% endblock %}

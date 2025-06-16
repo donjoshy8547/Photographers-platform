@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <!-- Basic -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">   
+   
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ 
+     <!-- Site Metas -->
+    <title>PhotoShoot Photography</title>  
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Site Icons -->
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <!-- Site CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="/static/css/responsive.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/custom.css">
+	<script src="/static/js/modernizr.js"></script> <!-- Modernizr -->
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+</style>
+
+</style>
+{% for m in messages %}
+<script>
+    alert("{{m}}")
+</script>
+{% endfor %}
+
+
+<body id="page-top" class="politics_version">
+
+    <!-- LOADER -->
+    <div id="preloader">
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+		<div class="loader-rd"></div>
+    </div><!-- end loader -->
+    <!-- END LOADER -->
+	
+<header class="header">
+
+
+    <nav class="navbar navbar-expand-lg navbar-light " style="margin-left: 40%;">
+		<div class="container-fluid">
+
+			<!-- Navbar links -->
+			<div class="collapse navbar-collapse" id="navbarNav">
+				<ul class="navbar-nav ms-auto" style="margin-left: 20%; color: black; font-weight: bold;"> <!-- ms-auto aligns the menu to the right -->
+					<li class="nav-item">
+						<a class="nav-link" href="/asphotohome">Home</a>
+					</li>
+                    
+					
+					
+					<li class="nav-item">
+						<a class="nav-link" href="/asaddphoto">Add Images</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/asmyphoto">Gallery</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/">Logout</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+</header>
+
+
+{% block  content%}
+
+{% endblock  %}
+
+
+<a href="#" id="scroll-to-top" class="dmtop global-radius"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></a>
+
+<!-- ALL JS FILES -->
+<script src="/static/js/all.js"></script>
+<!-- Camera Slider -->
+<script src="/static/js/jquery.mobile.customized.min.js"></script>
+<script src="/static/js/jquery.easing.1.3.js"></script> 
+<script src="/static/js/parallaxie.js"></script>
+<script src="/static/js/jquery.appear.min.js"></script>
+<script src="/static/js/skill.bars.jquery.js"></script>
+<script src="/static/js/responsiveslides.min.js"></script>
+<!-- Contact form JavaScript -->
+<script src="/static/js/jqBootstrapValidation.js"></script>
+<script src="/static/js/contact_me.js"></script>
+<!-- ALL PLUGINS -->
+<script src="/static/js/jquery.fatNav.min.js"></script>
+<script src="/static/js/menu-overlay.js"></script>
+<script src="/static/js/custom.js"></script>
+<script src="/static/js/zepto.min.js"></script>
+<script src="/static/js/imagesloaded.pkgd.min.js"></script>
+<script src="/static/js/slider.js"></script>
+
+</body>
+</html>

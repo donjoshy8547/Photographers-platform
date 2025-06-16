@@ -1,0 +1,644 @@
+{% extends "photograph/common_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-5 pt-5">
+    <div class="row">
+        <div class="col-12 mb-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'user_submit' %}">Events</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'user_submit_event' event_id=event.id %}">{{ event.Event }}</a></li>
+                    <li class="breadcrumb-item active">Image Editor</li>
+                </ol>
+            </nav>
+            <h2 class="text-center mb-3">
+                <i class="fas fa-edit text-primary mr-2"></i> Image Editor
+            </h2>
+            <p class="text-center text-muted">Edit and enhance your image with professional tools</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Image Editor Area -->
+        <div class="col-md-9">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-image mr-2"></i> {{ image_name }}</h5>
+                    <div>
+                        <button id="resetButton" class="btn btn-sm btn-light mr-2">
+                            <i class="fas fa-undo mr-1"></i> Reset
+                        </button>
+                        <button id="saveButton" class="btn btn-sm btn-success">
+                            <i class="fas fa-save mr-1"></i> Save Changes
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body text-center p-0 position-relative" style="min-height: 500px;">
+                    
+                    
+                    <!-- Direct image display (fallback) -->
+                    <img id="originalImage" src="{{ image_url }}" style="max-width: 100%; max-height: 70vh; display: none;" alt="{{ image_name }}">
+                    
+                    <!-- Canvas for image editing -->
+                    <canvas id="imageCanvas" style="max-width: 100%; max-height: 70vh;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-sliders-h mr-2"></i> Adjustments</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="brightnessSlider">Brightness</label>
+                        <input type="range" class="custom-range" id="brightnessSlider" min="-100" max="100" value="0">
+                        <div class="d-flex justify-content-between">
+                            <small>-100</small>
+                            <small id="brightnessValue">0</small>
+                            <small>+100</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contrastSlider">Contrast</label>
+                        <input type="range" class="custom-range" id="contrastSlider" min="-100" max="100" value="0">
+                        <div class="d-flex justify-content-between">
+                            <small>-100</small>
+                            <small id="contrastValue">0</small>
+                            <small>+100</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="saturationSlider">Saturation</label>
+                        <input type="range" class="custom-range" id="saturationSlider" min="-100" max="100" value="0">
+                        <div class="d-flex justify-content-between">
+                            <small>-100</small>
+                            <small id="saturationValue">0</small>
+                            <small>+100</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exposureSlider">Exposure</label>
+                        <input type="range" class="custom-range" id="exposureSlider" min="-100" max="100" value="0">
+                        <div class="d-flex justify-content-between">
+                            <small>-100</small>
+                            <small id="exposureValue">0</small>
+                            <small>+100</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sharpnessSlider">Sharpness</label>
+                        <input type="range" class="custom-range" id="sharpnessSlider" min="0" max="100" value="0">
+                        <div class="d-flex justify-content-between">
+                            <small>0</small>
+                            <small id="sharpnessValue">0</small>
+                            <small>100</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filters Panel -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-magic mr-2"></i> Preset Filters</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row filter-gallery">
+                        <div class="col-4 mb-3 filter-item" data-filter="none">
+                            <div class="card">
+                                <div class="card-img-top filter-preview none" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Normal</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="vintage">
+                            <div class="card">
+                                <div class="card-img-top filter-preview vintage" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Vintage</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="sepia">
+                            <div class="card">
+                                <div class="card-img-top filter-preview sepia" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Sepia</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="grayscale">
+                            <div class="card">
+                                <div class="card-img-top filter-preview grayscale" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>B&W</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="cool">
+                            <div class="card">
+                                <div class="card-img-top filter-preview cool" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Cool</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="warm">
+                            <div class="card">
+                                <div class="card-img-top filter-preview warm" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Warm</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="clarity">
+                            <div class="card">
+                                <div class="card-img-top filter-preview clarity" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Clarity</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="dramatic">
+                            <div class="card">
+                                <div class="card-img-top filter-preview dramatic" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Dramatic</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 mb-3 filter-item" data-filter="fade">
+                            <div class="card">
+                                <div class="card-img-top filter-preview fade" style="height: 60px; background-color: #f8f9fa;"></div>
+                                <div class="card-body p-1 text-center">
+                                    <small>Fade</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title"><i class="fas fa-check-circle mr-2"></i> Success!</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-save fa-4x text-success"></i>
+                </div>
+                <h4>Image Saved Successfully!</h4>
+                <p>Your edited image has been saved and replaced the original.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a href="{% url 'user_submit_event' event_id=event.id %}" class="btn btn-primary" id="backToGalleryBtn">Back to Gallery</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-exclamation-circle mr-2"></i> Error</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-times-circle fa-4x text-danger"></i>
+                </div>
+                <h4>Something Went Wrong</h4>
+                <p id="errorMessage">There was an error saving your image. Please try again.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="retryButton">Retry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Filter Styles */
+    .filter-item {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    .filter-item:hover {
+        transform: scale(1.05);
+    }
+    
+    .filter-item.active {
+        border: 2px solid #007bff;
+        border-radius: 0.25rem;
+    }
+    
+    /* Filter Previews */
+    .filter-preview.vintage {
+        background-color: #a67c52 !important;
+        opacity: 0.8;
+    }
+    
+    .filter-preview.sepia {
+        background-color: #704214 !important;
+        opacity: 0.8;
+    }
+    
+    .filter-preview.grayscale {
+        background-color: #808080 !important;
+    }
+    
+    .filter-preview.cool {
+        background-color: #4b86b4 !important;
+        opacity: 0.8;
+    }
+    
+    .filter-preview.warm {
+        background-color: #e67e22 !important;
+        opacity: 0.8;
+    }
+    
+    .filter-preview.clarity {
+        background-color: #3498db !important;
+    }
+    
+    .filter-preview.dramatic {
+        background-color: #2c3e50 !important;
+    }
+    
+    .filter-preview.fade {
+        background-color: #bdc3c7 !important;
+        opacity: 0.7;
+    }
+    
+    /* Canvas Container */
+    #imageCanvas {
+        display: block;
+        margin: 0 auto;
+        max-height: 70vh;
+    }
+</style>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Include CamanJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/camanjs/4.1.2/caman.full.min.js"></script>
+
+<script>
+    // Global variables
+    let currentFilter = 'none';
+    let originalImageData = null;
+    let camanInitialized = false;
+    
+    // Initialize the editor when document is ready
+    $(document).ready(function() {
+        // Show the original image first as a fallback
+        $('#originalImage').attr('src', '{{ image_url }}').show();
+        
+        // Try a direct approach without Caman first
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = document.getElementById('originalImage');
+        
+        img.onload = function() {
+            // Set canvas dimensions to match the image
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            
+            // Draw the image on the canvas
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            // Hide loading message
+            hideLoading();
+            
+            // Now initialize Caman
+            setTimeout(function() {
+                try {
+                    Caman('#imageCanvas', function() {
+                        // Store original image data for reset functionality
+                        originalImageData = this.imageData;
+                        camanInitialized = true;
+                        
+                        // Hide the original image once canvas is ready
+                        $('#originalImage').hide();
+                    });
+                } catch (error) {
+                    console.error("Error initializing Caman:", error);
+                    // Keep showing the original image as fallback
+                }
+            }, 500);
+        };
+        
+        img.onerror = function() {
+            console.error("Error loading image:", '{{ image_url }}');
+            hideLoading();
+            $('#errorMessage').text("Could not load the image for editing. Please try again.");
+            $('#errorModal').modal('show');
+        };
+        
+        // Set up event listeners for sliders
+        setupSliderListeners();
+        
+        // Set up filter selection
+        setupFilterSelection();
+        
+        // Set up reset button
+        $('#resetButton').click(function() {
+            resetImage();
+        });
+        
+        // Set up save button
+        $('#saveButton').click(function() {
+            saveImage();
+        });
+    });
+    
+    // Set up event listeners for sliders
+    function setupSliderListeners() {
+        // Brightness slider
+        $('#brightnessSlider').on('input', function() {
+            const value = $(this).val();
+            $('#brightnessValue').text(value);
+            applyAdjustments();
+        });
+        
+        // Contrast slider
+        $('#contrastSlider').on('input', function() {
+            const value = $(this).val();
+            $('#contrastValue').text(value);
+            applyAdjustments();
+        });
+        
+        // Saturation slider
+        $('#saturationSlider').on('input', function() {
+            const value = $(this).val();
+            $('#saturationValue').text(value);
+            applyAdjustments();
+        });
+        
+        // Exposure slider
+        $('#exposureSlider').on('input', function() {
+            const value = $(this).val();
+            $('#exposureValue').text(value);
+            applyAdjustments();
+        });
+        
+        // Sharpness slider
+        $('#sharpnessSlider').on('input', function() {
+            const value = $(this).val();
+            $('#sharpnessValue').text(value);
+            applyAdjustments();
+        });
+    }
+    
+    // Set up filter selection
+    function setupFilterSelection() {
+        $('.filter-option').click(function() {
+            // Remove active class from all filters
+            $('.filter-option').removeClass('active');
+            
+            // Add active class to selected filter
+            $(this).addClass('active');
+            
+            // Get filter name
+            currentFilter = $(this).data('filter');
+            
+            // Apply the filter
+            applyFilter(currentFilter);
+        });
+    }
+    
+    // Apply adjustments based on slider values
+    function applyAdjustments() {
+        if (!camanInitialized) {
+            console.warn("Caman not initialized yet, skipping adjustments");
+            return;
+        }
+        
+        showLoading('Processing image...');
+        
+        try {
+            Caman('#imageCanvas', function() {
+                // Reset to original state
+                this.revert(false);
+                
+                // Apply adjustments
+                this.brightness(parseInt($('#brightnessSlider').val()));
+                this.contrast(parseInt($('#contrastSlider').val()));
+                this.saturation(parseInt($('#saturationSlider').val()));
+                this.exposure(parseInt($('#exposureSlider').val()));
+                
+                // Apply sharpness
+                const sharpness = parseInt($('#sharpnessSlider').val());
+                if (sharpness > 0) {
+                    this.sharpen(sharpness);
+                }
+                
+                // Apply current filter if any
+                if (currentFilter && currentFilter !== 'none') {
+                    applyFilterToCanvas(this, currentFilter);
+                }
+                
+                // Render the changes
+                this.render(function() {
+                    hideLoading();
+                });
+            });
+        } catch (error) {
+            console.error("Error applying adjustments:", error);
+            hideLoading();
+        }
+    }
+    
+    // Apply a filter to the canvas
+    function applyFilter(filterName) {
+        if (!camanInitialized) {
+            console.warn("Caman not initialized yet, skipping filter");
+            return;
+        }
+        
+        showLoading('Applying filter...');
+        
+        try {
+            Caman('#imageCanvas', function() {
+                // Reset to original state
+                this.revert(false);
+                
+                // Re-apply current adjustments
+                this.brightness(parseInt($('#brightnessSlider').val()));
+                this.contrast(parseInt($('#contrastSlider').val()));
+                this.saturation(parseInt($('#saturationSlider').val()));
+                this.exposure(parseInt($('#exposureSlider').val()));
+                
+                // Apply sharpness
+                const sharpness = parseInt($('#sharpnessSlider').val());
+                if (sharpness > 0) {
+                    this.sharpen(sharpness);
+                }
+                
+                // Apply the selected filter
+                applyFilterToCanvas(this, filterName);
+                
+                // Render the changes
+                this.render(function() {
+                    hideLoading();
+                });
+            });
+        } catch (error) {
+            console.error("Error applying filter:", error);
+            hideLoading();
+        }
+    }
+    
+    // Apply a specific filter to the canvas
+    function applyFilterToCanvas(caman, filterName) {
+        switch (filterName) {
+            case 'vintage':
+                caman.vintage();
+                break;
+            case 'sepia':
+                caman.sepia();
+                break;
+            case 'gray':
+                caman.greyscale();
+                break;
+            case 'cool':
+                caman.cooling(10);
+                break;
+            case 'warm':
+                caman.warming(10);
+                break;
+            // Add more filters as needed
+        }
+    }
+    
+    // Reset the image to its original state
+    function resetImage() {
+        if (!camanInitialized) {
+            console.warn("Caman not initialized yet, skipping reset");
+            return;
+        }
+        
+        showLoading('Resetting image...');
+        
+        // Reset all sliders to default values
+        $('#brightnessSlider').val(0);
+        $('#brightnessValue').text('0');
+        
+        $('#contrastSlider').val(0);
+        $('#contrastValue').text('0');
+        
+        $('#saturationSlider').val(0);
+        $('#saturationValue').text('0');
+        
+        $('#exposureSlider').val(0);
+        $('#exposureValue').text('0');
+        
+        $('#sharpnessSlider').val(0);
+        $('#sharpnessValue').text('0');
+        
+        // Remove active class from all filters
+        $('.filter-option').removeClass('active');
+        $('.filter-option[data-filter="none"]').addClass('active');
+        currentFilter = 'none';
+        
+        try {
+            Caman('#imageCanvas', function() {
+                // Reset to original state
+                this.revert(true);
+                
+                // Render the changes
+                this.render(function() {
+                    hideLoading();
+                });
+            });
+        } catch (error) {
+            console.error("Error resetting image:", error);
+            hideLoading();
+        }
+    }
+    
+    // Save the edited image
+    function saveImage() {
+        showLoading('Saving image...');
+        
+        // Get the canvas data
+        const canvas = document.getElementById('imageCanvas');
+        const imageData = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Send the data to the server
+        $.ajax({
+            url: '{% url "save_edited_image" %}',
+            type: 'POST',
+            data: {
+                'image_data': imageData,
+                'image_path': '{{ image_path }}',
+                'event_id': '{{ event.id }}',
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                hideLoading();
+                if (response.success) {
+                    $('#successMessage').text(response.message);
+                    $('#successModal').modal('show');
+                    
+                    // Add a redirect with cache busting to ensure the updated image is shown
+                    $('#backToGalleryBtn').click(function() {
+                        window.location.href = "{% url 'user_submit_event' event_id=event.id %}?t=" + response.timestamp;
+                    });
+                    
+                    // Auto-redirect after 2 seconds
+                    setTimeout(function() {
+                        window.location.href = "{% url 'user_submit_event' event_id=event.id %}?t=" + response.timestamp;
+                    }, 2000);
+                } else {
+                    $('#errorMessage').text(response.message);
+                    $('#errorModal').modal('show');
+                }
+            },
+            error: function(xhr, status, error) {
+                hideLoading();
+                $('#errorMessage').text('An error occurred while saving the image. Please try again.');
+                $('#errorModal').modal('show');
+            }
+        });
+    }
+    
+    // Show loading overlay with message
+    function showLoading(message) {
+        $('#loadingMessage').text(message || 'Loading...');
+        $('#loadingOverlay').show();
+    }
+    
+    // Hide loading overlay
+    function hideLoading() {
+        $('#loadingOverlay').hide();
+    }
+</script>
+{% endblock %}

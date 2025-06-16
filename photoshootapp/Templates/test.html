@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Page{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Test Page</h3>
+                </div>
+                <div class="card-body">
+                    <p>This is a test page to verify that routing is working correctly.</p>
+                    <p>If you can see this page, the Django server is running properly.</p>
+                    
+                    <h4 class="mt-4">Navigation Links</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="list-group-item"><a href="{% url 'login' %}">Login</a></li>
+                        <li class="list-group-item"><a href="{% url 'photohome' %}">Photographer Home</a></li>
+                        <li class="list-group-item"><a href="{% url 'asphotohome' %}">Assistant Photographer Home</a></li>
+                        <li class="list-group-item"><a href="{% url 'userhome' %}">User Home</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

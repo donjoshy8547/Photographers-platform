@@ -1,0 +1,93 @@
+{% extends "photograph/common_base.html" %}
+
+{% block content %}
+<br>
+<br>
+<br>
+	
+    <div id="contact" class="section lb">
+        <div class="container">
+            <div class="section-title text-center">
+                <h3>REGISTER PAGE</h3>
+                {% comment %} <p>Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus.</p> {% endcomment %}
+            </div><!-- end title -->
+
+            <div class="row">
+                <div class="col-md-8" style="margin-left: 240px;">
+					<div class="contact_form" style="padding: 90px 120px;">
+						<div id="message"></div>
+						<form method="post">
+							{% csrf_token %}
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" id="name" name="name" type="name" placeholder="name" required="required" data-validation-required-message="Enter a name ">
+										<p class="help-block text-danger"></p>
+									</div>
+									<div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" id="email" name="email" type="email" placeholder="Your Email" required="required" data-validation-required-message="Please enter your email address.">
+										<p class="help-block text-danger"></p>
+									</div>
+									
+									<div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" id="phone" name="phone" type="text" placeholder="Your Phone" required="required" pattern="[9876][0-9]{9}" data-validation-required-message="Please enter your phone NO.">
+										<p class="help-block text-danger"></p>
+									</div>
+									<div class="form-group" style="width: 340px; ">
+										
+										<textarea name="address" id="address" required placeholder="Your Address" data-validation-required-message="Please enter your Address" ></textarea>
+										<!-- <p class="help-block text-danger"></p> -->
+									</div>
+									<div class="form-group" style="width: 340px; ">
+										<!-- <input class="form-control" id="email" name="email" type="email" placeholder="Your Email" required="required" data-validation-required-message="Please enter your email address."> -->
+										
+										<select  style="width: 340px; " name="location" id="location" required>
+											<option value="">Select District</option>
+											<option value="Thiruvananthapuram">Thiruvananthapuram</option>
+											<option value="Kollam">Kollam</option>
+											<option value="Pathanamthitta">Pathanamthitta</option>
+											<option value="Alappuzha">Alappuzha</option>
+											<option value="Kottayam">Kottayam</option>
+											<option value="Idukki">Idukki</option>
+											<option value="Ernakulam">Ernakulam</option>
+											<option value="Thrissur">Thrissur</option>
+											<option value="Palakkad">Palakkad</option>
+											<option value="Malappuram">Malappuram</option>
+											<option value="Kozhikode">Kozhikode</option>
+											<option value="Wayanad">Wayanad</option>
+											<option value="Kannur">Kannur</option>
+											<option value="Kasaragod">Kasaragod</option>
+										</select>
+										
+										<p class="help-block text-danger"></p>
+									</div>
+									<div class="form-group" style="width: 340px; background-color: gray;">
+										<input class="form-control" id="pimage" name="pimage" type="file" placeholder="Your Photo" required="required"  data-validation-required-message="Please enter your Photo">
+										<p class="help-block text-danger"></p>
+									</div>
+									
+									<div class="form-group" style="width: 340px;">
+										<input class="form-control" id="password" name="password" type="password" onkeyup="checkPasswordMatch()" placeholder="Password" required="required" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" data-validation-required-message="Please enter your password.">
+										<p class="help-block text-danger"></p>
+									</div>
+									<div class="form-group" style="width: 340px;">
+										<input class="form-control" id="cpassword" name="cpassword" type="password" onkeyup="checkPasswordMatch()" placeholder="Conform Password" required="required" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" data-validation-required-message="Please enter your password again.">
+										<!-- <span id="message"></span> -->
+										<p id="message" class="help-block text-danger"></p>
+									</div>
+								</div>
+								<div class="clearfix"></div>
+								<div class="col-lg-12 text-left">
+									<div id="success"></div>
+									<button id="sendMessageButton" class="hover-effect-new" type="submit"><span>REGISTER NOW</span></button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+            </div><!-- end row -->
+        </div><!-- end container -->
+    </div><!-- end section -->
+	    
+
+	{% endblock %}

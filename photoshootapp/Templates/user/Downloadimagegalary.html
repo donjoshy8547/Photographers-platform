@@ -1,0 +1,68 @@
+{% extends "user/common_base.html" %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .event-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+        .download-btn {
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+        .event-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 5px 5px 0 0;
+        }
+    </style>
+</head>
+<div id="gallery" class="section lb">
+    <div class="container">
+        <div class="section-title text-center">
+            <h3><i class="fas fa-download mr-2"></i> Download Event Images</h3>
+            <p class="lead">Select an event below to download all images as a zip file</p>
+        </div>
+        
+        <div class="row">
+            {% if event %}
+                {% for ev in event %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow event-card">
+                        <div class="event-header">
+                            <h5 class="mb-0"><i class="fas fa-calendar-event mr-2"></i> {{ ev.Event }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Date:</strong> {{ ev.date }}</p>
+                            <p><strong>Time:</strong> {{ ev.time }}</p>
+                            <p><strong>Location:</strong> {{ ev.location }}</p>
+                            <p class="mb-0"><strong>Description:</strong> {{ ev.Dis }}</p>
+                        </div>
+                        <div class="card-footer bg-light text-center">
+                            <a href="/downloadusergalary/?id={{ev.id}}" class="btn btn-primary btn-lg download-btn">
+                                <i class="fas fa-download mr-2"></i> Download All Images
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i> No events found. Please contact your photographer for more information.
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

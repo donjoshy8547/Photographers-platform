@@ -1,0 +1,145 @@
+{% extends "photograph/common_base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 pt-5">
+    {% csrf_token %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-4">
+                Test Submit to Client
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Test Submit Form</h5>
+                </div>
+                <div class="card-body">
+                    <form id="testSubmitForm">
+                        <div class="form-group">
+                            <label for="eventId">Event ID:</label>
+                            <input type="text" class="form-control" id="eventId" name="event_id" value="2">
+                        </div>
+                        <button type="button" id="testSubmitBtn" class="btn btn-success mt-3">
+                            <i class="fas fa-paper-plane mr-1"></i> Test Submit to Client
+                        </button>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <h6>Response:</h6>
+                        <pre id="responseOutput" class="bg-light p-3" style="max-height: 200px; overflow-y: auto;">No response yet</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Submission Successful</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle mr-2"></i> The images have been successfully submitted to the client.
+                </div>
+                <p>The client can now download all submitted images as a zip file from their gallery page.</p>
+                <div class="text-center mt-3">
+                    <a id="directDownloadLink" href="#" class="btn btn-success btn-lg">
+                        <i class="fas fa-download mr-2"></i> Download ZIP File
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#testSubmitBtn').click(function() {
+            console.log("Test submit button clicked");
+            
+            // Get CSRF token
+            var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+            var eventId = $('#eventId').val();
+            
+            console.log("Event ID:", eventId);
+            console.log("CSRF Token:", csrftoken);
+            
+            // Submit to server
+            $.ajax({
+                url: '{% url "submit_to_client" %}',
+                type: 'POST',
+                data: {
+                    'event_id': eventId,
+                    'csrfmiddlewaretoken': csrftoken
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                },
+                success: function(response) {
+                    console.log("Success response:", response);
+                    $('#responseOutput').text(JSON.stringify(response, null, 2));
+                    
+                    if (response.success) {
+                        // Set the direct download link if available
+                        if (response.download_url) {
+                            $('#directDownloadLink').attr('href', response.download_url);
+                        } else {
+                            // Hide the button if no download URL is available
+                            $('#directDownloadLink').parent().hide();
+                        }
+                        $('#successModal').modal('show');
+                    } else {
+                        $('#errorMessage').text(response.message);
+                        $('#errorModal').modal('show');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error:", error);
+                    console.log("Status:", status);
+                    console.log("Response:", xhr.responseText);
+                    
+                    $('#responseOutput').text("Error: " + error + "\nStatus: " + status + "\nResponse: " + xhr.responseText);
+                    $('#errorMessage').text('An error occurred during submission. Please try again.');
+                    $('#errorModal').modal('show');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

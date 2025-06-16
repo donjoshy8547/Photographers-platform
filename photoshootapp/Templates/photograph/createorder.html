@@ -1,0 +1,87 @@
+{% extends "photograph/common_base.html" %}
+
+{% block content %}
+
+<!-- Breadcrumb Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/photohome"><i class="fa fa-home"></i> Home</a>
+                    <span>Order</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Order Section Begin -->
+<section class="order-section spad">
+    <div class="container">
+        <div class="row">
+            <!-- Order Details Form -->
+            <div class="col-lg-7 mb-4">
+                <div class="order-details-form p-4 rounded shadow-sm">
+                    <h4 class="mb-4">Order Details</h4>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <input type="text" name="phone" class="form-control" placeholder="Phone" required>
+                            </div>
+                            <div class="col-lg-12 mb-3">
+                                <input type="text" name="address" class="form-control" placeholder="Address" required>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <input type="text" name="city" class="form-control" placeholder="City" required>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <input type="text" name="state" class="form-control" placeholder="State" required>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <input type="text" name="postal_code" class="form-control" placeholder="Postal Code" required>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <input type="text" name="country" class="form-control" placeholder="Country" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Place Order</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="col-lg-5">
+                <div class="order-summary p-4 rounded shadow-sm">
+                    <h4 class="mb-4">Your Cart</h4>
+                    <ul class="list-unstyled">
+                        {% for item in cart %}
+                        <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                            <div class="cart__product__item d-flex align-items-center">
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-thumbnail" style="height: 50px; width: 50px;">
+                                <div class="cart__product__item__title ml-3">
+                                    <h6 class="mb-0">{{ item.product.name }}</h6>
+                                    <p class="text-muted mb-0">Quantity: {{ item.quantity }}</p>
+                                </div>
+                            </div>
+                            <span class="text-primary">${{ item.product.price|floatformat:2 }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="order__total mt-4">
+                        <p class="text-muted">Total Amount</p>
+                        <h5 class="font-weight-bold">${{ discounted_total|floatformat:2 }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Order Section End -->
+
+{% endblock %}

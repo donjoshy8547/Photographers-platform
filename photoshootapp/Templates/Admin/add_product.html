@@ -1,0 +1,57 @@
+{% extends "admin/common_base.html" %}
+{% block content %}
+  
+
+    
+    <div id="contact" class="section lb">
+        <div class="container">
+            <div class="section-title text-center">
+                <h3>ADD YOUR PRODUCT</h3>
+            </div><!-- end title -->
+
+            <div class="row">
+                <div class="col-md-8" style="margin-left: 240px;">
+                    <div class="contact_form" style="padding: 90px 120px;">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group" style="width: 340px; background-color: gray;">
+                                        <input class="form-control" id="name" name="name" type="text" placeholder="Product Name" required="required" data-validation-required-message="Please enter a product name.">
+                                        <p class="help-block text-danger"></p>
+                                    </div>
+                                    <div class="form-group" style="width: 340px; background-color: gray;">
+                                        <select class="form-control" id="category" name="category" required>
+                                            <option value="" disabled selected>Choose Category</option>
+                                            <option value="Camera">Camera</option>
+                                            <option value="Accessory">Accessory</option>
+                                        </select>
+                                        <p class="help-block text-danger"></p>
+                                    </div>
+                                    <div class="form-group" style="width: 340px;">
+                                        <input class="form-control" id="price" name="price" type="number" step="0.01" placeholder="Price" required="required" data-validation-required-message="Please enter a price.">
+                                        <p class="help-block text-danger"></p>
+                                    </div>
+                                    <div class="form-group" style="width: 340px;">
+                                        <textarea class="form-control" id="description" name="description" placeholder="Description" required="required" data-validation-required-message="Please enter a description."></textarea>
+                                        <p class="help-block text-danger"></p>
+                                    </div>
+                                    <div class="form-group" style="width: 340px;">
+                                        <input class="form-control" id="image" name="image" type="file" placeholder="Product Image">
+                                        <p class="help-block text-danger"></p>
+                                    </div>
+                                </div>
+                                <div class="clearfix"></div>
+                                <div class="col-lg-12 text-left">
+                                    <button id="sendMessageButton" class="hover-effect-new" type="submit"><span>ADD PRODUCT</span></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- end row -->
+        </div><!-- end container -->
+    </div><!-- end section -->
+</body>
+</html>
+{% endblock  %}

@@ -1,0 +1,426 @@
+{% extends "photograph/common_base.html" %}
+
+{% block content %}
+	<div class="banner-area banner-bg-1 bg-gradient-animated">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="banner animate-slide-up">
+						<h2 class="animate-slide-up">Portfolio</h2>
+						<ul class="page-title-link animate-slide-up delay-300">
+							<li><a href="/photohome">Home</a></li>
+							<li><a href="/myphoto">Gallery</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+    <div id="gallery" class="section lb">
+		<div class="container">
+			<div class="section-title text-center" data-aos="fade-up">
+				<h3>Gallery</h3>
+			</div><!-- end title -->
+		
+			<div class="gallery-menu text-center row" data-aos="fade-up" data-aos-delay="200">
+				<div class="col-md-12">
+					<div class="button-group filter-button-group">
+						<button class="active filter-btn" data-filter="*">All</button>
+						{% regroup images by category as grouped_images %}
+						{% for group in grouped_images %}
+							
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			
+			{% if images %}
+			<div class="row mb-4" data-aos="fade-up" data-aos-delay="300">
+				<div class="col-md-12 text-center">
+					<button id="processBtn" class="btn btn-primary btn-fancy">AI Process & Edit</button>
+				</div>
+			</div>
+			{% endif %}
+			
+			<div class="gallery-list row gallery-masonry">
+				{% if images %}
+					{% for group in grouped_images %}
+						{% for image in group.list %}
+							<div class="col-lg-4 col-md-6 col-sm-12 gallery-grid photo_{{ forloop.parentloop.counter }}" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:forloop.parentloop.counter|add:100 }}">
+								<div class="gallery-card animate-on-hover">
+									<div class="gallery-img-container">
+										<img src="{{ image.image.url }}" class="img-fluid" alt="Photo">
+									</div>
+									<div class="gallery-card-overlay">
+										
+										<p>{{ image.description }}</p>
+									</div>
+									<div class="gallery-card-actions">
+										<a href="{{ image.image.url }}" class="gallery-card-action" data-fancybox="gallery"><i class="fa fa-search"></i></a>
+										<a href="/deleteimage?id={{ image.id }}" class="gallery-card-action"><i class="fa fa-trash"></i></a>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+					{% endfor %}
+				{% else %}
+					<div class="col-12 text-center mt-5" data-aos="fade-up">
+						<div class="glass-card">
+							<h4>No photos in your gallery yet</h4>
+							<p>Upload your first photo to get started</p>
+							<a href="/addphoto" class="btn btn-primary btn-fancy mt-3">Upload Photos</a>
+						</div>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<style>
+		/* Additional custom styles for this page */
+		.banner-area {
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.banner-area::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0,0,0,0.3);
+			z-index: 1;
+		}
+		
+		.banner {
+			position: relative;
+			z-index: 2;
+		}
+		
+		.banner h2 {
+			color: #fff;
+			text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+		}
+		
+		.page-title-link li a {
+			color: rgba(255,255,255,0.9);
+			transition: all 0.3s ease;
+		}
+		
+		.page-title-link li a:hover {
+			color: var(--primary);
+		}
+		
+		/* Gallery grid and card styles */
+		.gallery-masonry {
+			margin: 0 -15px;
+		}
+		
+		.gallery-grid {
+			padding: 15px;
+			margin-bottom: 15px;
+			transition: transform 0.4s ease-in-out;
+		}
+		
+		.gallery-card {
+			position: relative;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+			transition: all 0.3s ease;
+			height: 100%;
+			transform: translateY(0);
+		}
+		
+		.gallery-img-container {
+			position: relative;
+			overflow: hidden;
+			padding-top: 75%; /* 4:3 aspect ratio */
+		}
+		
+		.gallery-img-container img {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform 0.5s ease;
+		}
+		
+		.gallery-card:hover img {
+			transform: scale(1.05);
+		}
+		
+		.gallery-card-overlay {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+			color: #fff;
+			padding: 20px;
+			opacity: 0;
+			transform: translateY(20px);
+			transition: all 0.3s ease;
+		}
+		
+		.gallery-card:hover .gallery-card-overlay {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		
+		.gallery-card-overlay .title {
+			font-size: 1.2rem;
+			margin-bottom: 5px;
+			color: #fff;
+		}
+		
+		.gallery-card-overlay p {
+			font-size: 0.9rem;
+			margin-bottom: 0;
+			color: rgba(255,255,255,0.8);
+		}
+		
+		.gallery-card-actions {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			display: flex;
+			flex-direction: column;
+			opacity: 0;
+			transform: translateX(20px);
+			transition: all 0.3s ease;
+		}
+		
+		.gallery-card:hover .gallery-card-actions {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		
+		.gallery-card-action {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			background: rgba(255,255,255,0.9);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--primary);
+			margin-bottom: 8px;
+			transition: all 0.2s ease;
+		}
+		
+		.gallery-card-action:hover {
+			background: var(--primary);
+			color: #fff;
+			transform: scale(1.1);
+		}
+		
+		/* Animation classes */
+		.animate-on-hover:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+		}
+		
+		.animate-slide-up {
+			animation: slideUp 0.6s ease forwards;
+			opacity: 0;
+		}
+		
+		.delay-300 {
+			animation-delay: 0.3s;
+		}
+		
+		.animate-pulse {
+			animation: pulse 1.5s infinite;
+		}
+		
+		.animate-rotate {
+			animation: rotate 1s linear infinite;
+		}
+		
+		@keyframes slideUp {
+			from {
+				opacity: 0;
+				transform: translateY(30px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+		
+		@keyframes pulse {
+			0% {
+				opacity: 1;
+			}
+			50% {
+				opacity: 0.7;
+			}
+			100% {
+				opacity: 1;
+			}
+		}
+		
+		@keyframes rotate {
+			from {
+				transform: rotate(0deg);
+			}
+			to {
+				transform: rotate(360deg);
+			}
+		}
+		
+		/* Filter button styles */
+		.filter-btn {
+			background: transparent;
+			border: 2px solid var(--primary);
+			color: var(--primary);
+			padding: 8px 16px;
+			margin: 0 5px 10px;
+			border-radius: 30px;
+			font-weight: 500;
+			transition: all 0.3s ease;
+		}
+		
+		.filter-btn:hover, .filter-btn.active {
+			background: var(--primary);
+			color: #fff;
+			transform: translateY(-2px);
+		}
+		
+		/* Custom scrollbar for the page */
+		::-webkit-scrollbar {
+			width: 10px;
+		}
+		
+		::-webkit-scrollbar-track {
+			background: #f1f1f1;
+		}
+		
+		::-webkit-scrollbar-thumb {
+			background: var(--primary);
+			border-radius: 10px;
+		}
+		
+		::-webkit-scrollbar-thumb:hover {
+			background: var(--primary-dark);
+		}
+	</style>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Initialize AOS animation library if available
+			if (typeof AOS !== 'undefined') {
+				AOS.init({
+					duration: 800,
+					easing: 'ease-in-out',
+					once: true
+				});
+			}
+			
+			// Initialize FancyBox for image lightbox if available
+			if (typeof $.fancybox !== 'undefined') {
+				$('[data-fancybox="gallery"]').fancybox({
+					buttons: ['zoom', 'slideShow', 'fullScreen', 'download', 'close'],
+					animationEffect: "fade",
+					transitionEffect: "slide"
+				});
+			}
+			
+			// Initialize isotope if the library is available
+			if (typeof Isotope !== 'undefined') {
+				var grid = document.querySelector('.gallery-list');
+				var iso;
+				
+				// Initialize with imagesLoaded for proper layout
+				imagesLoaded(grid, function() {
+					iso = new Isotope(grid, {
+						itemSelector: '.gallery-grid',
+						layoutMode: 'masonry',
+						masonry: {
+							columnWidth: '.gallery-grid',
+							gutter: 0
+						}
+					});
+					
+					// Reveal items after layout is complete
+					document.querySelectorAll('.gallery-grid').forEach(function(item) {
+						item.style.opacity = 1;
+					});
+				});
+				
+				// Filter items on button click
+				var filterBtns = document.querySelectorAll('.filter-button-group button');
+				filterBtns.forEach(function(btn) {
+					btn.addEventListener('click', function() {
+						var filterValue = this.getAttribute('data-filter');
+						
+						// Remove active class from all buttons
+						filterBtns.forEach(function(btn) {
+							btn.classList.remove('active');
+						});
+						
+						// Add active class to current button
+						this.classList.add('active');
+						
+						// Filter items with animation
+						document.querySelectorAll('.gallery-grid').forEach(function(item) {
+							item.style.opacity = 0;
+							item.style.transform = 'scale(0.8)';
+						});
+						
+						setTimeout(function() {
+							// Filter items
+							iso.arrange({
+								filter: filterValue === '*' ? '*' : filterValue
+							});
+							
+							// Show filtered items
+							setTimeout(function() {
+								document.querySelectorAll('.gallery-grid' + (filterValue === '*' ? '' : filterValue)).forEach(function(item) {
+									item.style.opacity = 1;
+									item.style.transform = 'scale(1)';
+								});
+							}, 50);
+						}, 300);
+					});
+				});
+			}
+		});
+		
+		document.getElementById("processBtn").addEventListener("click", function() {
+			// Add loading animation
+			this.innerHTML = '<i class="fa fa-spinner animate-rotate"></i> Processing...';
+			this.classList.add('animate-pulse');
+			
+			// Navigate directly to the editor dashboard instead of processing
+			setTimeout(() => {
+				window.location.href = "{% url 'editor_dashboard' %}";
+			}, 800);
+		});
+		
+		// Helper function for CSRF token (kept for reference)
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+	</script>
+	
+	{% csrf_token %}
+	<!-- Include the AI processing JavaScript -->
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "photograph/common_base.html" %}
+
+{% block content %}
+    <style>
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: #007bff;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons button {
+            padding: 8px 12px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .action-buttons button.refund {
+            background-color: #4CAF50;
+        }
+    </style>
+<br>
+<br>
+    {% if ord %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Product</th>
+                    <th>Shipping Address</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Order Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in ord %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>{{ order.product.name }}</td>
+                        <td>{{ order.address }}</td>
+                        <td>{{ order.phone }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.payment_status }}</td>
+                        <td>{{ order.order_date }}</td>
+                        <td>
+                            {% if order.status == "Shipped" or order.status == "Pending" or order.status == "Delivered" %}
+                                <!-- Show Cancel button for Shipped, Pending, and Delivered orders -->
+                                <a href="/cancelorder?id={{ order.id }}" class="btn btn-warning btn-sm">Cancel</a>
+                            {% endif %}
+                            
+                            <!-- {% if order.status == "Delivered" %}
+                                <a href="/refundorder?id={{ order.id }}" class="btn btn-primary btn-sm">Request for Refund</a>
+                            {% endif %}
+                            
+                            {% if order.status == "Cancelled" %}
+                                <a href="/refund?id={{ order.id }}" class="btn btn-primary btn-sm"> Request for Refund</a>
+                            {% endif %} -->
+                            <a href="/productreview?id={{ order.id }}" class="btn btn-primary btn-sm"> review</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No orders found.</p>
+    {% endif %}
+<br>
+<br>
+<br>
+
+{% endblock %}
