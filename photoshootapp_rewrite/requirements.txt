@@ -1,0 +1,32 @@
+# Django Core
+Django>=5.1,<6.0
+django-crispy-forms>=2.0
+crispy-bootstrap5>=0.7
+
+# Database
+Pillow>=10.0  # Image processing
+
+# AI/ML (optional - uncomment when ready)
+# deepface>=0.0.90
+# opencv-python>=4.8
+# tensorflow>=2.15
+# torch>=2.1
+# torchvision>=0.16
+
+# Async tasks (optional)
+# celery>=5.3
+# redis>=5.0
+
+# Security
+python-dotenv>=1.0
+argon2-cffi>=23.1
+
+# Utilities
+python-dateutil>=2.8
+requests>=2.31
+
+# Development
+pytest-django>=4.5
+black>=23.0
+flake8>=6.0
+isort>=5.12
